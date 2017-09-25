@@ -12,6 +12,7 @@
                 <img class="img-responsive" src="assets/images/prod1.jpg">
               </div>
             </div>
+            <div class="col-xs-8 product-short-info">
               <h3>{{menu}}</h3>
               <h5><strong>QTY: {{../.table_id}} - </strong>{{qty}}</h5>
               <h5><strong>Price: {{../table_id}} + </strong>Php {{#makePrice}}{{price}}{{/makePrice}}</h5>

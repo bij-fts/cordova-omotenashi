@@ -25,7 +25,7 @@
             </div>
             <div class="col-xs-8 product-short-info">
               <h3>{{name}}</h3>
-              <h4>Php {{#makePrice}}{{price}}{{/makePrice}}</h4>
+              <h4>Php {{forHumans price}}</h4>
               <button class="btn btn-default btn-view" type="button" data-toggle="modal" data-target="#viewModal">View</button>
               <button class="btn btn-default btn-order" type="button" data-toggle="modal" data-target="#orderModal"
                 data-kitchenid="{{../kitchen_id}}" data-tableid="{{../table_id}}" data-menuprice="{{price}}"
@@ -45,7 +45,7 @@
   <div class="container-fluid">
     <div class="row">
       <div class="quick-total pull-left text-center">
-        <h4>Total: Php <span id="order_total">{{#makePrice}}{{order_total}}{{/makePrice}}</span></h4>
+        <h4>Total: Php <span id="order_total">{{forHumans order_total}}</span></h4>
       </div>
 
       <div class="quick-order pull-right text-center">
