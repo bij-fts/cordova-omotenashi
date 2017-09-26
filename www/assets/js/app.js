@@ -1,8 +1,9 @@
-var host = 'https://ddaef8be.ngrok.io';
-var apiURL = host + '/api';
+var host = 'http://2a38313b.ngrok.io';
+var apiUrl = host + '/api';
 
 /* "Namespace" */
 var local = window.localStorage;
+var Snackbar = cordova.plugins.snackbar;
 
 var app = {
   initialize: function() {
@@ -10,6 +11,8 @@ var app = {
   },
   onDeviceReady: function() {
     this.receivedEvent('deviceready');
+    document.addEventListener("offline", deviceOffline, false);
+    document.addEventListener("online", deviceOnline  , false);
   },
   receivedEvent: function(id) {
 
@@ -24,7 +27,24 @@ jQuery(function() {
   $('#loginForm').submit(function(event) {
     event.preventDefault();
   });
+
+  $('#search-field').on('keypress', function() {
+    $('.product-holder').filter(function(index) {
+      alert(index);
+    });
+  });
+
 });
+
+function deviceOnline() {
+  Snackbar('Connection Established', 'INDEFINITE');
+}
+
+function deviceOffline() {
+  Snackbar('You are offline', 'INDEFINITE', 'Retry', function() {
+    window.location.reload();
+  });
+}
 
 /* Generic Object */
 function Tray() {
@@ -34,8 +54,9 @@ function Tray() {
   this.notes = null;
   this.orders = [];
 }
-function getUser() { return getLocal('user_data'); }
-function getUserData(key) { var user = getLocal('user_data'); return user[key]; }
+function getUser() { return getJSON('user_data'); }
+function getUserData(key) { var user = getJSON('user_data'); return user[key]; }
+
 function addItem() {
   var x = $('#order_form');
   var price = parseFloat(x.find('#menu_price').val());
@@ -43,7 +64,14 @@ function addItem() {
   var menu_id = parseInt(x.find('#menu_id').val());
   var qty = parseInt(x.find('#quantity').val());
   var menu = x.find('#menu_name').val();
-  var notes = x.find('#notes').val();
+  var notes_string = x.find('#notes').val();
+  var notes = null;
+
+  if(qty > 1) {
+    notes = JSON.stringify(notes_string.split('\n'));
+  }else {
+    notes = notes_string;
+  }
 
   var trays = getJSON('trays');
   var tray = trays[getObjectIndex(getJSON('trays'), 'table_id', table_id)];
@@ -57,7 +85,11 @@ function addItem() {
     "qty":qty
   };
 
+  tray.ordered_by = getUserData('id');
   tray.orders.push(item);
+
+  setTray(tray);
+  updateTotal(tray);
 
   document.getElementById('order_form').reset();
   $('#orderModal').modal('hide');
@@ -65,33 +97,59 @@ function addItem() {
 
 function auth() { return parseInt(getLocal('logged_in')) ? true : false; }
 
-function placeOrder() {
-  confirm(1);
-  /*
-  insert cordova confirm dialog, callback -> confirm
-  */
+function quickOrder() {
+  // confirm(1);
+  navigator.notification.confirm(
+    'This action cannot be undone',
+    confirm,
+    'Place this order?',
+    ['Cancel','Okay']
+  );
 }
 
 function confirm(selection) {
-  if(selection) {
-    // get tray
+  if(parseInt(selection) === 2) {
+    var x = $('#order_form');
+    var table_id = parseInt(x.find('#table_id').val());
+    var tray = getTray(table_id);
+
+    // Clear tray -- Order stored
+    var trays = getJSON('trays');
+    setTray({
+      "ordered_by":null,
+      "table_id":table_id,
+      "order_total":0,
+      "notes":"",
+      "orders":[],
+    });
 
     var data = JSON.parse(JSON.stringify(tray));
 
     $.ajax({
-      url: apiUrl + 'orders',
+      url: apiUrl + '/orders/test',
       method: 'POST',
       data: data,
       headers: {
         'Authorization':'Bearer ' + getLocal('api_token')
       },
-      success: function(response) {
-        window.location.href = "#/tables";
-      },
-      error: function(response) {
-        alert("Failed to place Order");
+      statusCode: {
+        200: function(response) {
+          cordova.plugins.snackbar('Successfully placed order', 'SHORT');
+          console.log('success... redirecting');
+          setTimeout(function(){ window.location.href = "#/tables"; }, 10000);
+        },
+        400: function(response) {
+          alert(response.text);
+          cordova.plugins.snackbar('Failed to place order', 'SHORT');        
+        },
+        500: function(response) {
+          alert(response.text);
+          cordova.plugins.snackbar('Failed to place order', 'SHORT');          
+        }
       }
     });
+  }else {
+
   }
 }
 
@@ -170,17 +228,17 @@ function fetchTrays() {
 /* UI Helper Functions */
 function updateTotal(tray) {
   var total = 0;
+  var total_orders = 0;
 
   for(var index = 0; index < tray.orders.length; index++) {
-    console.log(tray.orders[index]); 
     if(!tray.orders[index].cancelled) {
-
       total += parseFloat(tray.orders[index].price * tray.orders[index].qty);
+      total_orders++;
     }
   }
-
   tray.order_total = total;
   $('.quick-total #order_total').html(forHumans(tray.order_total));
+  $('.tray-div .badge').html(total_orders);
   setTray(tray);
 }
 
@@ -199,12 +257,12 @@ var sammyApp = Sammy('#app_main', function() {
     var data = $("#loginForm").serialize();
 
     $.ajax({
-      url: apiURL+'/authenticate/login',
+      url: apiUrl+'/authenticate/login',
       type: 'POST',
       data: data,
       beforeSend: function(request) {
         var options = { dimBackground: true };
-        // SpinnerPlugin.activityStart("Loading...", options);
+        SpinnerPlugin.activityStart("Please Wait...", options);
       },
       statusCode: {
         401:function(response){
@@ -218,14 +276,14 @@ var sammyApp = Sammy('#app_main', function() {
           setLocal('user_data', JSON.stringify(response.user));
           setLocal('logged_in', 1);
 
-          context.load(apiURL + '/fetch', {
+          context.load(apiUrl + '/fetch', {
             method: 'GET',
             headers: {
               'Authorization':'Bearer ' + getLocal('api_token')
             }
           }).then(function(data) {
             setLocal('data', data);
-            context.load(apiURL + '/tables', {
+            context.load(apiUrl + '/tables', {
               method: 'GET',
               headers: {
                 'Authorization':'Bearer ' + getLocal('api_token')
@@ -243,9 +301,8 @@ var sammyApp = Sammy('#app_main', function() {
                 trays.push(tray);
               }
               // fetchTrays(); // live
-              console.log(trays.length);
               setLocal('trays', JSON.stringify(trays));
-              // SpinnerPlugin.activityStop();
+              SpinnerPlugin.activityStop();
             }).then(function() {
               context.redirect('#/tables');
             })
@@ -265,6 +322,7 @@ var sammyApp = Sammy('#app_main', function() {
           context.partials = {header: partial};
 
           context.headerText = "Select Table";
+          context.showTrayButton = false;
           context.tables = JSON.parse(getLocal('tables'));
           
           context.partial('templates/tables.hb');
@@ -286,7 +344,9 @@ var sammyApp = Sammy('#app_main', function() {
           context.table_id = parseInt(context.params.table);
           context.headerText = "Select Store";
           context.kitchens = kitchens;
-
+          context.showTrayButton = true;
+          var tray = getTray(context.table_id);
+          context.badge = tray.orders.length;
           context.partial('templates/kitchens.hb');
         }
       );
@@ -308,6 +368,9 @@ var sammyApp = Sammy('#app_main', function() {
           context.table_id = parseInt(context.params.table);
           context.kitchen_id = parseInt(context.params.kitchen);
           context.headerText = "Select Menu";
+          context.showTrayButton = true;
+          var tray = getTray(context.table_id);
+          context.badge = tray.orders.length;
           context.categories = categories;
           
           context.partial('templates/categories.hb');
@@ -333,6 +396,9 @@ var sammyApp = Sammy('#app_main', function() {
           context.kitchen_id = parseInt(context.params.kitchen);
           context.category_id = parseInt(context.params.category);
           context.headerText = "Select Item";
+          context.showTrayButton = true;
+          var tray = getTray(context.table_id);
+          context.badge = tray.orders.length;
           context.order_total = getTray(context.table_id);
           context.menus = menus;
           
@@ -350,13 +416,22 @@ var sammyApp = Sammy('#app_main', function() {
           context.partials = {header: partial};
 
           context.table_id = context.params.table;
-          context.headerText = "Table "+context.table_id+"Tray";
-          context.tray = getTray(context.table_id);
-
+          context.headerText = "Tray: Table "+context.table_id;
+          context.showTrayButton = false;
+          var tray = getTray(context.table_id);
+          context.badge = tray.orders.length;
+          context.tray = tray;
+          context.order_total = updateTotal(getTray(context.table_id));
           context.partial('templates/tray.hb');
         }
       );
     }else context.redirect('#/');
+  });
+
+  this.get('#/orders', function(context) {
+    if(auth()) {
+      alert('Coming Soon');
+    }
   });
 
   this.get('#/logout', function(context) {
@@ -365,6 +440,8 @@ var sammyApp = Sammy('#app_main', function() {
       local.clear();
       setLocal('logged_in', 0);
       context.redirect('#/');
+    }else {
+      context.back();
     }
   });
 
@@ -374,3 +451,30 @@ var sammyApp = Sammy('#app_main', function() {
 Handlebars.registerHelper('forHumans', function(object) {
   return numeral(parseFloat(object)).format('0,0.00');
 });
+
+Handlebars.registerHelper('arrayToString', function(object) {
+  if(object[0] === '[') {
+    var notes_array = JSON.parse(object);
+    var output = notes_array.join();
+
+    return output;
+  }else return object;
+});
+
+function isJson(item) {
+  item = typeof item !== "string"
+    ? JSON.stringify(item)
+    : item;
+
+  try {
+    item = JSON.parse(item);
+  } catch (e) {
+    return false;
+  }
+
+  if (typeof item === "object" && item !== null) {
+    return true;
+  }
+
+  return false;
+}

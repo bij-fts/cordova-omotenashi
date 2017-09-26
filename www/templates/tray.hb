@@ -1,6 +1,6 @@
 {{>header}}
 
-<section class="custom-padding" id="table-select">
+<section class="custom-padding" id="table-select" style="margin-bottom: 30px">
   <div class="container">
     <div class="row">
       {{#each tray.orders}}
@@ -13,11 +13,13 @@
               </div>
             </div>
             <div class="col-xs-8 product-short-info">
-            Table {{../table_id}}
+              Table {{../table_id}}
               <h3>{{menu}}</h3>
               <h5><strong>QTY: </strong>{{qty}}</h5>
               <h5><strong>Price: </strong>Php {{forHumans price}}</h5>
-              <p><strong>Note: </strong>{{notes}}<a class="remove-item-btn" onclick="removeItem({{../table_id}},{{@index}})">Remove</a> <a class="edit-item-btn" onclick="editItem({{../table_id}},{{@index}})">Edit</a></p>
+              <p><strong>Note: </strong>{{arrayToString notes}}</p>
+              <a class="remove-item-btn" onclick="removeItem({{../table_id}},{{@index}})">Remove</a>
+              <a class="edit-item-btn" onclick="editItem({{../table_id}},{{@index}})">Edit</a>
             </div>
             <div class="col-xs-12 product-note"></div>
             <div class="clearfix"></div>
@@ -33,12 +35,18 @@
   <div class="container-fluid">
     <div class="row">
       <div class="quick-total pull-left text-center">
-        <h4>Total: Php {{order_total}}</h4>
+        <h4>Total: Php <span id="order_total">{{forHumans order_total}}</span></h4>
       </div>
+
       <div class="quick-order pull-right text-center">
-        <h4>Place Order</h4>
+        <form id="submit_order">
+          <input type="hidden" name="table_id" id="table_id" value="{{table_id}}">
+        </form>
+        <h4><a class="text-sucess" disabled="true" onclick="quickOrder()">Place Order</a></h4>
       </div>
-      <div class="clearfix"></div>
+
+      <div class="clearfix">
+      </div>
     </div>
   </div>
 </div>

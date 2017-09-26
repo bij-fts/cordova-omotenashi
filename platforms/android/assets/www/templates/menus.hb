@@ -4,7 +4,7 @@
   <div class="container">
     <div class="row">
       <div class="col-sm-12">
-        <form role="form">
+        <form role="form" id="search-field">
           <div class="form-group">
             <input class="form-control input-search">
             <button class="btn btn-default btn-search" type="button"><i class="fa fa-search"></i>
@@ -15,7 +15,7 @@
     </div>
     <div class="row">
       {{#each menus}}
-      <div class="product-holder">
+      <div class="product-holder" id="{{name}}">
         <div class="col-md-12">
           <div class="row">
             <div class="col-xs-4">
@@ -25,9 +25,8 @@
             </div>
             <div class="col-xs-8 product-short-info">
               <h3>{{name}}</h3>
-              <h4>Php {{#makePrice}}{{price}}{{/makePrice}}</h4>
-              <button class="btn btn-default btn-view" type="button" data-toggle="modal" data-target="#viewModal">View</button>
-              <button class="btn btn-default btn-order" type="button" data-toggle="modal" data-target="#orderModal"
+              <h4>Php {{forHumans price}}</h4>
+              <button class="btn btn-default btn-order btn-block" type="button" data-toggle="modal" data-target="#orderModal"
                 data-kitchenid="{{../kitchen_id}}" data-tableid="{{../table_id}}" data-menuprice="{{price}}"
                 data-menuname="{{name}}" data-menuid="{{id}}"
               >Order</button>
@@ -45,16 +44,15 @@
   <div class="container-fluid">
     <div class="row">
       <div class="quick-total pull-left text-center">
-        <h4>Total: Php <span id="order_total">{{#makePrice}}{{order_total}}{{/makePrice}}</span></h4>
+        <h4>Total: Php <span id="order_total">{{forHumans order_total}}</span></h4>
       </div>
 
       <div class="quick-order pull-right text-center">
         <form id="submit_order">
           <input type="hidden" name="table_id" id="table_id" value="{{table_id}}">
         </form>
-        <h4><a class="text-sucess" disabled="true" onclick="submitOrder()">Place Order</a></h4>
+        <h4><a class="text-sucess" disabled="true" onclick="quickOrder()">Place Order</a></h4>
       </div>
-
 
       <div class="clearfix">
       </div>

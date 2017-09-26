@@ -6,7 +6,7 @@
       {{#each tables}}
       <div class="col-xs-6">
         <a href="#/tables/{{id}}">
-          <div class="table-holder" style="height:75px; width:170px">
+          <div class="table-holder">
             <h3 class="table-number">#{{name}}</h3>
           </div>
         </a>

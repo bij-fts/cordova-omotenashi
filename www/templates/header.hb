@@ -8,12 +8,13 @@
         <div class="menu-div pull-left">
           <a onclick="openNav()">Menu</a>
         </div>
+        {{#if showTrayButton}}
+          <a href="#/tray/{{table_id}}">
         <div class="tray-div pull-right">
-          {{#unless tables}}
-          <span class="badge pull-right">{{badge}}</span>
-          {{/unless}}
-          <a href="#/tray/{{table_id}}">Tray</a>
+            <span class="badge">123</span>
         </div>
+          </a>
+        {{/if}}
         <div class="clearfix"></div>
       </div>
     </div>

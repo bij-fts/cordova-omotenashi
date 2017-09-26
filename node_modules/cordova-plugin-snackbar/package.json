@@ -1,0 +1,63 @@
+{
+  "_from": "cordova-plugin-snackbar",
+  "_id": "cordova-plugin-snackbar@2.1.4",
+  "_inBundle": false,
+  "_integrity": "sha1-KJ5U0cZr7hlaOMjIXr/XK7SbnQQ=",
+  "_location": "/cordova-plugin-snackbar",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "cordova-plugin-snackbar",
+    "name": "cordova-plugin-snackbar",
+    "escapedName": "cordova-plugin-snackbar",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-snackbar/-/cordova-plugin-snackbar-2.1.4.tgz",
+  "_shasum": "289e54d1c66bee195a38c8c85ebfd72bb49b9d04",
+  "_spec": "cordova-plugin-snackbar",
+  "_where": "C:\\xampp\\htdocs\\cordova\\node_modules",
+  "author": {
+    "name": "Apache Software Foundation"
+  },
+  "bugs": {
+    "url": "https://github.com/echonox/cordova-plugin-snackbar/issues"
+  },
+  "bundleDependencies": false,
+  "cordova": {
+    "id": "cordova-plugin-snackbar",
+    "platforms": [
+      "android"
+    ]
+  },
+  "deprecated": false,
+  "description": "Cordova Material Snackbar Plugin",
+  "engines": [
+    {
+      "name": "cordova-android",
+      "version": ">=4.0.0-dev"
+    }
+  ],
+  "homepage": "https://github.com/echonox/cordova-plugin-snackbar#readme",
+  "keywords": [
+    "cordova",
+    "snackbar",
+    "material",
+    "material design",
+    "ecosystem:cordova",
+    "cordova-android"
+  ],
+  "license": "Apache 2.0",
+  "name": "cordova-plugin-snackbar",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/echonox/cordova-plugin-snackbar.git"
+  },
+  "version": "2.1.4"
+}

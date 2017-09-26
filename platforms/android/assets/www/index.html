@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="">
   <meta name="author" content="">
   <title>Omotenashi - Login</title>
@@ -12,17 +13,18 @@
   <link href="assets/css/custom.css" rel="stylesheet">
   <script type="text/javascript" src="cordova.js"></script>
 </head>
-<!-- Application entry point -->
 <body>
-  <main id="app_main"></main>
+  <!-- Application entry point -->
+  
+  <main id="app_main" class="wrapper"></main>
 
   <!-- Do not put anything here -->
 
   <div id="mySidenav" class="sidenav">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
     <div class="small-logo"><img src="assets/images/logo.png" class="pull-left"><h4 class="pull-left">Navigation</h4><div class="clearfix"></div></div>
-    <!-- <a href="#">Table Menu</a>
-    <a href="#">Order Review</a> -->
+    <a href="#/tables">Table Menu</a>
+    <a href="#/orders">Order Review</a>
     <a href="#/logout">Sign Out</a>
   </div>
 
@@ -77,7 +79,7 @@
               <input type="hidden" id="table_id" name="table_id">
               <input type="hidden" id="menu_name" name="menu_name">
               <input type="hidden" id="menu_price" name="menu_price">
-              <button class="btn btn-default btn-add-tray" onclick="addToTray()" type="button">Place Order</button>
+              <button class="btn btn-default btn-add-tray" onclick="addItem()" type="button">Place Order</button>
             </div>
           </form>
         </div>
@@ -93,7 +95,7 @@
   <script src="assets/js/plugins/sammy.handlebars.js"></script>
   <script src="assets/js/plugins/sammy.storage.js"></script>
   <script src="assets/js/plugins/sammy.json.js"></script>
-  <script src="assets/js/popper.js"></script>
+  <script src="assets/vendor/popper/popper.js"></script>
   <script src="assets/vendor/bootstrap/js/bootstrap.min.js"></script>
   <script src="assets/vendor/jquery-easing/jquery.easing.min.js"></script>
   <script src="assets/js/scrolling-nav.js"></script>
@@ -103,8 +105,8 @@
     var button = $(event.relatedTarget);
     var modal = $(this);
 
-    var temp = getLocal('data');
-    var kitchen = temp.kitchens[button.data('kitchenid')-1];
+    var temp = getJSON('data');
+    var kitchen = getObject(temp.kitchens, 'id', parseInt(button.data('kitchenid')));
 
     modal.find('.modal-body #kitchen_name').html(kitchen.name);
     modal.find('.modal-title').html(button.data('menuname'));
