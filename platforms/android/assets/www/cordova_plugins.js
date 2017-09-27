@@ -38,14 +38,6 @@ module.exports = [
         ]
     },
     {
-        "id": "cordova-plugin-snackbar.MaterialSnackbar",
-        "file": "plugins/cordova-plugin-snackbar/www/materialSnackbar.js",
-        "pluginId": "cordova-plugin-snackbar",
-        "clobbers": [
-            "cordova.plugins.snackbar"
-        ]
-    },
-    {
         "id": "cordova-plugin-network-information.network",
         "file": "plugins/cordova-plugin-network-information/www/network.js",
         "pluginId": "cordova-plugin-network-information",
@@ -61,6 +53,14 @@ module.exports = [
         "clobbers": [
             "Connection"
         ]
+    },
+    {
+        "id": "cordova-plugin-snackbar.MaterialSnackbar",
+        "file": "plugins/cordova-plugin-snackbar/www/materialSnackbar.js",
+        "pluginId": "cordova-plugin-snackbar",
+        "clobbers": [
+            "cordova.plugins.snackbar"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -70,8 +70,8 @@ module.exports.metadata =
     "cordova-plugin-dialogs": "1.3.3",
     "cordova-plugin-x-toast": "2.6.0",
     "cordova-plugin-spinner": "1.1.0",
-    "cordova-plugin-snackbar": "2.1.4",
-    "cordova-plugin-network-information": "1.3.3"
+    "cordova-plugin-network-information": "1.3.3",
+    "cordova-plugin-snackbar": "2.1.4"
 };
 // BOTTOM OF METADATA
 });

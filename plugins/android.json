@@ -19,10 +19,10 @@
         "cordova-plugin-spinner": {
             "PACKAGE_NAME": "com.omotenashi.waiter"
         },
-        "cordova-plugin-snackbar": {
+        "cordova-plugin-network-information": {
             "PACKAGE_NAME": "com.omotenashi.waiter"
         },
-        "cordova-plugin-network-information": {
+        "cordova-plugin-snackbar": {
             "PACKAGE_NAME": "com.omotenashi.waiter"
         }
     },

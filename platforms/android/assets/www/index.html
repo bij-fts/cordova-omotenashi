@@ -15,7 +15,7 @@
 </head>
 <body>
   <!-- Application entry point -->
-  
+
   <main id="app_main" class="wrapper"></main>
 
   <!-- Do not put anything here -->
@@ -23,12 +23,12 @@
   <div id="mySidenav" class="sidenav">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
     <div class="small-logo"><img src="assets/images/logo.png" class="pull-left"><h4 class="pull-left">Navigation</h4><div class="clearfix"></div></div>
-    <a href="#/tables">Table Menu</a>
-    <a href="#/orders">Order Review</a>
+    <a href="#/tables" onclick="closeNav()">Table Menu</a>
+    <a href="#/orders" onclick="closeNav()">Order Review</a>
     <a href="#/logout">Sign Out</a>
   </div>
 
-  <div class="modal order-product-modal" data-backdrop="static" id="orderModal" role="dialog">
+  <div class="modal order-product-modal" id="orderModal" role="dialog">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -68,7 +68,7 @@
 
             <div class="product-bottom-desc">
               <div class="form-group">
-                <label>Add Note:</label> 
+                <label>Add Note:</label>
 
                 <textarea class="form-control" placeholder="Note" id="notes" name="notes" rows="3" style="resize: none"></textarea>
               </div>

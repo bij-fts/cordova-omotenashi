@@ -1,18 +1,17 @@
-var host = 'http://2a38313b.ngrok.io';
+var host = 'http://f934652d.ngrok.io';
 var apiUrl = host + '/api';
 
 /* "Namespace" */
 var local = window.localStorage;
-var Snackbar = cordova.plugins.snackbar;
 
 var app = {
   initialize: function() {
     document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
+    document.addEventListener("offline", deviceOffline, false);
+    document.addEventListener("online", deviceOnline  , false);
   },
   onDeviceReady: function() {
     this.receivedEvent('deviceready');
-    document.addEventListener("offline", deviceOffline, false);
-    document.addEventListener("online", deviceOnline  , false);
   },
   receivedEvent: function(id) {
 
@@ -37,11 +36,13 @@ jQuery(function() {
 });
 
 function deviceOnline() {
-  Snackbar('Connection Established', 'INDEFINITE');
+  console.log('online event fired!');
+  cordova.plugins.snackbar('Connection Established', 'INDEFINITE');
 }
 
 function deviceOffline() {
-  Snackbar('You are offline', 'INDEFINITE', 'Retry', function() {
+  console.log('offline event fired!');
+  cordova.plugins.snackbar('You are offline', 'INDEFINITE', 'Retry', function() {
     window.location.reload();
   });
 }
@@ -64,15 +65,17 @@ function addItem() {
   var menu_id = parseInt(x.find('#menu_id').val());
   var qty = parseInt(x.find('#quantity').val());
   var menu = x.find('#menu_name').val();
-  var notes_string = x.find('#notes').val();
+  var raw_notes = x.find('#notes').val();
   var notes = null;
 
+  console.log(raw_notes);
   if(qty > 1) {
-    notes = JSON.stringify(notes_string.split('\n'));
+    notes = JSON.stringify(raw_notes.split('\n'));
   }else {
-    notes = notes_string;
+    notes = raw_notes;
   }
 
+  console.log(notes);
   var trays = getJSON('trays');
   var tray = trays[getObjectIndex(getJSON('trays'), 'table_id', table_id)];
 
@@ -114,14 +117,14 @@ function confirm(selection) {
     var tray = getTray(table_id);
 
     // Clear tray -- Order stored
-    var trays = getJSON('trays');
-    setTray({
-      "ordered_by":null,
-      "table_id":table_id,
-      "order_total":0,
-      "notes":"",
-      "orders":[],
-    });
+    // var trays = getJSON('trays');
+    // setTray({
+    //   "ordered_by":null,
+    //   "table_id":table_id,
+    //   "order_total":0,
+    //   "notes":"",
+    //   "orders":[],
+    // });
 
     var data = JSON.parse(JSON.stringify(tray));
 
@@ -140,11 +143,11 @@ function confirm(selection) {
         },
         400: function(response) {
           alert(response.text);
-          cordova.plugins.snackbar('Failed to place order', 'SHORT');        
+          cordova.plugins.snackbar('Failed to place order', 'SHORT');
         },
         500: function(response) {
           alert(response.text);
-          cordova.plugins.snackbar('Failed to place order', 'SHORT');          
+          cordova.plugins.snackbar('Server Error', 'SHORT');
         }
       }
     });
@@ -155,6 +158,8 @@ function confirm(selection) {
 
 function removeItem(table_id, item_id) {
   var tray = getTray(table_id);
+  console.log(tray);
+  console.log(getItems(table_id));
   var item = getItem(tray, item_id);
 
   item.cancelled = true;
@@ -174,9 +179,7 @@ function editItem(table_id, data) {
 // Shorthand functions
 function getItems(table_id) { var tray = getTray(parseInt(table_id)); return tray.orders; }
 function getItem(tray, item_id) { return getObject(tray.orders, 'menu_id', parseInt(item_id)); }
-
 function getOrder(table_id) { var trays = getLocal('trays'); return getObject(trays, 'table_id', parseInt(table_id)); }
-
 function getTray(table_id) { var trays = getJSON('trays'); return getObject(trays, 'table_id', parseInt(table_id)); }
 function setTray(tray) {
   var trays = getJSON('trays');
@@ -187,27 +190,20 @@ function setTray(tray) {
 
   setLocal('trays', JSON.stringify(trays));
 }
-
 function getJSON(name) { return JSON.parse(getLocal(name)); }
-
 function getLocal(name) { return local.getItem(name); }
 function setLocal(name, value) { local.setItem(name, value); }
-
 function getObject(obj_arr, obj_key, obj_val) {
   var object = getObjectIndex(obj_arr, obj_key, obj_val);
   object = obj_arr[object];
   return object != null ? object : null;
 }
-
 function getObjectIndex(obj_arr, obj_key, obj_val) {
   for(var index = 0; index < obj_arr.length; index++) {
     if(obj_arr[index][obj_key] == obj_val) return index;
   }
   return null;
 }
-
-function pushObject(obj_arr, obj_key, obj) { var stored_object = findObject(object_array, obj_key, object[obj_key]); }
-
 function fetchTrays() {
   $.ajax({
     url: apiUrl + 'orders/fetch',
@@ -252,7 +248,7 @@ var sammyApp = Sammy('#app_main', function() {
     context.render('templates/login.hb').appendTo(context.$element());
   });
 
-  this.post('#/', function(context) {    
+  this.post('#/', function(context) {
     $('#loginBtn').prop('disabled', true);
     var data = $("#loginForm").serialize();
 
@@ -324,7 +320,7 @@ var sammyApp = Sammy('#app_main', function() {
           context.headerText = "Select Table";
           context.showTrayButton = false;
           context.tables = JSON.parse(getLocal('tables'));
-          
+
           context.partial('templates/tables.hb');
         }
       );
@@ -372,7 +368,7 @@ var sammyApp = Sammy('#app_main', function() {
           var tray = getTray(context.table_id);
           context.badge = tray.orders.length;
           context.categories = categories;
-          
+
           context.partial('templates/categories.hb');
         }
       );
@@ -401,7 +397,7 @@ var sammyApp = Sammy('#app_main', function() {
           context.badge = tray.orders.length;
           context.order_total = getTray(context.table_id);
           context.menus = menus;
-          
+
           context.partial('templates/menus.hb');
         }
       );
@@ -463,8 +459,8 @@ Handlebars.registerHelper('arrayToString', function(object) {
 
 function isJson(item) {
   item = typeof item !== "string"
-    ? JSON.stringify(item)
-    : item;
+  ? JSON.stringify(item)
+  : item;
 
   try {
     item = JSON.parse(item);

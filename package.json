@@ -24,8 +24,8 @@
             "cordova-plugin-dialogs": {},
             "cordova-plugin-x-toast": {},
             "cordova-plugin-spinner": {},
-            "cordova-plugin-snackbar": {},
-            "cordova-plugin-network-information": {}
+            "cordova-plugin-network-information": {},
+            "cordova-plugin-snackbar": {}
         },
         "platforms": [
             "android"
