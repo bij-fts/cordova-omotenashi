@@ -5,9 +5,11 @@
         <h4>{{headerText}}</h4>
       </div>
       <div class="options-holder">
+        {{#unless tables}}
         <div class="menu-div pull-left">
           <a onclick="openNav()">Menu</a>
         </div>
+        {{/unless}}
         {{#if showTrayButton}}
           <a href="#/tray/{{table_id}}">
         <div class="tray-div pull-right">

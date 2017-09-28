@@ -1,9 +1,7 @@
-var host = 'http://f934652d.ngrok.io';
+var host = 'http://22356473.ngrok.io';
+
 var apiUrl = host + '/api';
-
-/* "Namespace" */
 var local = window.localStorage;
-
 var app = {
   initialize: function() {
     document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
@@ -137,17 +135,16 @@ function confirm(selection) {
       },
       statusCode: {
         200: function(response) {
-          cordova.plugins.snackbar('Successfully placed order', 'SHORT');
-          console.log('success... redirecting');
+          cordova.plugins.snackbar('Successfully placed order', 'SHORT', '', function() {});
           setTimeout(function(){ window.location.href = "#/tables"; }, 10000);
         },
         400: function(response) {
           alert(response.text);
-          cordova.plugins.snackbar('Failed to place order', 'SHORT');
+          cordova.plugins.snackbar('Failed to place order', 'SHORT', '', function() {});
         },
         500: function(response) {
           alert(response.text);
-          cordova.plugins.snackbar('Server Error', 'SHORT');
+          cordova.plugins.snackbar('Server Error', 'SHORT', '', function() {});
         }
       }
     });
@@ -426,8 +423,21 @@ var sammyApp = Sammy('#app_main', function() {
 
   this.get('#/orders', function(context) {
     if(auth()) {
-      alert('Coming Soon');
-    }
+      context.app.swap('');
+      this.load('templates/header.hb').then(
+        function(partial) {
+          context..partials = {header: partial};
+
+          context.table_id = context.params.table;
+          context.headerText = "Orders for Table " + context.table_id;
+          context.showTrayButton = false;
+
+          // orders object array
+
+          context.partial('templates/order.hb');
+        }
+      );
+    }else context.redirect('#/');
   });
 
   this.get('#/logout', function(context) {
@@ -436,9 +446,7 @@ var sammyApp = Sammy('#app_main', function() {
       local.clear();
       setLocal('logged_in', 0);
       context.redirect('#/');
-    }else {
-      context.back();
-    }
+    }else context.redirect('#/');
   });
 
 });
@@ -452,25 +460,13 @@ Handlebars.registerHelper('arrayToString', function(object) {
   if(object[0] === '[') {
     var notes_array = JSON.parse(object);
     var output = notes_array.join();
-
     return output;
   }else return object;
 });
 
 function isJson(item) {
-  item = typeof item !== "string"
-  ? JSON.stringify(item)
-  : item;
-
-  try {
-    item = JSON.parse(item);
-  } catch (e) {
-    return false;
-  }
-
-  if (typeof item === "object" && item !== null) {
-    return true;
-  }
-
+  item = typeof item !== "string"?JSON.stringify(item):item;
+  try { item = JSON.parse(item); }catch(e) { return false; }
+  if (typeof item === "object" && item !== null) return true;
   return false;
 }
