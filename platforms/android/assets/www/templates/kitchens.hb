@@ -1,18 +1,18 @@
 {{>header}}
 
 <section id="kitchen-select" class="custom-padding">
-  <div class="container">
-    <div class="row">
-      <div class="col-sm-12">
-        <form role="form">
-          <div class="form-group">
-            <input class="form-control input-search" placeholder="Search">
-            <button class="btn btn-default btn-search" type="button"><i class="fa fa-search"></i>
-            </button>
-          </div>
+  <div class="row">
+    <div class="col-sm-12">
+      <div id="search-field">
+        <form role="form" id="a" class="form-group" method="post" action="#/search">
+          <input name="search_term" type="text" class="form-control input-search" value="haha">
+          <input name="some" type="text" class="form-control input-search" value="haha">
+          <button class="btn btn-default btn-search" type="submit"><i class="fa fa-search"></i></button>
         </form>
       </div>
     </div>
+  </div>
+  <div class="container">
     <div class="row">
       <div class="col-md-6">
         <h2>Order is for: <strong>Table <span id="selected-table">{{table_id}}</span></strong> </h2>

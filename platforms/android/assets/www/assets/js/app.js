@@ -1,19 +1,17 @@
-var host = 'http://22356473.ngrok.io';
-
-var apiUrl = host + '/api';
+var host = 'http://192.168.2.144';
+var port = '8000';
+var apiUrl = host + ':' + port + '/api';
 var local = window.localStorage;
 var app = {
   initialize: function() {
     document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
-    document.addEventListener("offline", deviceOffline, false);
-    document.addEventListener("online", deviceOnline  , false);
   },
   onDeviceReady: function() {
     this.receivedEvent('deviceready');
   },
   receivedEvent: function(id) {
 
-  }
+  }                      
 }.initialize();
 
 jQuery(function() {
@@ -32,18 +30,6 @@ jQuery(function() {
   });
 
 });
-
-function deviceOnline() {
-  console.log('online event fired!');
-  cordova.plugins.snackbar('Connection Established', 'INDEFINITE');
-}
-
-function deviceOffline() {
-  console.log('offline event fired!');
-  cordova.plugins.snackbar('You are offline', 'INDEFINITE', 'Retry', function() {
-    window.location.reload();
-  });
-}
 
 /* Generic Object */
 function Tray() {
@@ -65,27 +51,25 @@ function addItem() {
   var menu = x.find('#menu_name').val();
   var raw_notes = x.find('#notes').val();
   var notes = null;
+  var image = x.find('image').val();
 
-  console.log(raw_notes);
-  if(qty > 1) {
+  if(qty > 1 && raw_notes.length) {
+    // Convert to array if textarea is not empty
     notes = JSON.stringify(raw_notes.split('\n'));
-  }else {
-    notes = raw_notes;
-  }
+  }else notes = raw_notes;
 
-  console.log(notes);
   var trays = getJSON('trays');
   var tray = trays[getObjectIndex(getJSON('trays'), 'table_id', table_id)];
 
   var item = {
-    "cancelled":false,
     "menu_id":menu_id,
     "notes":notes,
     "price":price,
     "menu":menu,
-    "qty":qty
+    "qty":qty,
+    "image_uri":image
   };
-
+console.log(tray);
   tray.ordered_by = getUserData('id');
   tray.orders.push(item);
 
@@ -99,20 +83,23 @@ function addItem() {
 function auth() { return parseInt(getLocal('logged_in')) ? true : false; }
 
 function quickOrder() {
-  // confirm(1);
+  // confirm(2);
   navigator.notification.confirm(
     'This action cannot be undone',
     confirm,
     'Place this order?',
-    ['Cancel','Okay']
+    ['Cancel','Dine in', 'Take Out']
   );
 }
 
 function confirm(selection) {
-  if(parseInt(selection) === 2) {
+  if(parseInt(selection) === 2 || parseInt(selection) === 3) {
     var x = $('#order_form');
     var table_id = parseInt(x.find('#table_id').val());
     var tray = getTray(table_id);
+    // tray.
+
+    if(parseInt(selection) === 3) tray.notes = "For Take-out";
 
     // Clear tray -- Order stored
     // var trays = getJSON('trays');
@@ -125,7 +112,7 @@ function confirm(selection) {
     // });
 
     var data = JSON.parse(JSON.stringify(tray));
-
+    console.log(data);
     $.ajax({
       url: apiUrl + '/orders/test',
       method: 'POST',
@@ -133,18 +120,23 @@ function confirm(selection) {
       headers: {
         'Authorization':'Bearer ' + getLocal('api_token')
       },
+      beforeSend:function(request) {
+        console.log(JSON.stringify(data));
+      },
       statusCode: {
         200: function(response) {
-          cordova.plugins.snackbar('Successfully placed order', 'SHORT', '', function() {});
-          setTimeout(function(){ window.location.href = "#/tables"; }, 10000);
+          cordova.plugins.snackbar('Successfully placed order', 'LONG', 'Back to Tables', function() {
+          });
+          setT
+            window.location.href="#/tables";
         },
         400: function(response) {
-          alert(response.text);
-          cordova.plugins.snackbar('Failed to place order', 'SHORT', '', function() {});
+          alert(response);
+          cordova.plugins.snackbar('Failed to place order', 'LONG', '', function() {});
         },
         500: function(response) {
-          alert(response.text);
-          cordova.plugins.snackbar('Server Error', 'SHORT', '', function() {});
+          alert(response);
+          cordova.plugins.snackbar('Server Error', 'LONG', '', function() {});
         }
       }
     });
@@ -153,29 +145,18 @@ function confirm(selection) {
   }
 }
 
-function removeItem(table_id, item_id) {
-  var tray = getTray(table_id);
-  console.log(tray);
-  console.log(getItems(table_id));
-  var item = getItem(tray, item_id);
+// function editItem(table_id, data) {
+//   var tray = getTray(table_id);
+//   var item = getItem(tray, data.menu_id);
 
-  item.cancelled = true;
-  updateTotal(tray);
-}
-
-function editItem(table_id, data) {
-  var tray = getTray(table_id);
-  var item = getItem(tray, data.menu_id);
-
-  // replace item's data
-  // item.price = data.price;
-  item.notes = data.notes;
-  item.qty = data.qty;
-}
+//   // replace item's data
+//   item.notes = data.notes;
+//   item.qty = data.qty;
+// }
 
 // Shorthand functions
 function getItems(table_id) { var tray = getTray(parseInt(table_id)); return tray.orders; }
-function getItem(tray, item_id) { return getObject(tray.orders, 'menu_id', parseInt(item_id)); }
+function getItem(tray, item_id) { return getObjectIndex(tray.orders, 'menu_id', parseInt(item_id)); }
 function getOrder(table_id) { var trays = getLocal('trays'); return getObject(trays, 'table_id', parseInt(table_id)); }
 function getTray(table_id) { var trays = getJSON('trays'); return getObject(trays, 'table_id', parseInt(table_id)); }
 function setTray(tray) {
@@ -233,6 +214,7 @@ function updateTotal(tray) {
   $('.quick-total #order_total').html(forHumans(tray.order_total));
   $('.tray-div .badge').html(total_orders);
   setTray(tray);
+  return parseFloat(total);
 }
 
 function forHumans(price) { return numeral(parseFloat(price)).format('0,0.00'); }
@@ -255,13 +237,32 @@ var sammyApp = Sammy('#app_main', function() {
       data: data,
       beforeSend: function(request) {
         var options = { dimBackground: true };
-        SpinnerPlugin.activityStart("Please Wait...", options);
+        // SpinnerPlugin.activityStart("Please wait...", options);
+      },
+      complete: function(response) {
+        // SpinnerPlugin.activityStop();
       },
       statusCode: {
         401:function(response){
           // TODO: Add a dialog for Invalid Credentials
-
           $('#loginBtn').prop('disabled', false);
+          navigator.notification.confirm(
+            'Wrong username or password',
+            function(selection) {
+              // if(parseInt(selection) === 2) {
+              //   var tray = getTray(table_id);
+              //   tray.orders.splice(item_id, 1);
+
+              //   updateTotal(tray);
+              //   setTray(tray);
+
+              //   cordova.plugins.snackbar('Removed item from tray', 'LONG', '', function() {});
+              //   $(event.target).closest("div .product-holder").remove();
+              // }
+            },
+            'Login Failed',
+            ['Retry']
+          );
         },
         200:function(response){
 
@@ -295,7 +296,6 @@ var sammyApp = Sammy('#app_main', function() {
               }
               // fetchTrays(); // live
               setLocal('trays', JSON.stringify(trays));
-              SpinnerPlugin.activityStop();
             }).then(function() {
               context.redirect('#/tables');
             })
@@ -392,14 +392,48 @@ var sammyApp = Sammy('#app_main', function() {
           context.showTrayButton = true;
           var tray = getTray(context.table_id);
           context.badge = tray.orders.length;
-          context.order_total = getTray(context.table_id);
+          context.order_total = updateTotal(getTray(context.table_id));
           context.menus = menus;
+          context.host = host + ':' + port;
 
           context.partial('templates/menus.hb');
         }
       );
     }else context.redirect('#/');
 
+  });
+
+  this.post('#/search', function(context) {
+    if(auth()) {
+      context.app.swap('');
+      context.menus = null;
+
+      var term = $('#a').serialize();
+      console.log(term);
+
+      $.ajax({
+        url: apiUrl + '/menus/search?term=' + term,
+        method: 'GET',
+        headers: {
+          'Authorization' : 'Bearer ' + getLocal('api_token')
+        },
+        success: function(response) {
+          context.load('templates/header.hb').then(
+            function(partial) {        
+              context.menus = response;
+              context.partials = {header: partial};
+              context.headerText = "Search Results"
+              context.showTrayButton = false;
+              context.host = host + ':' + port;
+              context.partial('templates/menus.hb');
+            }
+          );
+        },
+        error: function(response) {
+          // console.log(response);
+        }
+      });
+    }else context.redirect('#/');
   });
 
   this.get('#/tray/:table', function(context) {
@@ -414,6 +448,7 @@ var sammyApp = Sammy('#app_main', function() {
           var tray = getTray(context.table_id);
           context.badge = tray.orders.length;
           context.tray = tray;
+          context.host = host + ':' + port;
           context.order_total = updateTotal(getTray(context.table_id));
           context.partial('templates/tray.hb');
         }
@@ -421,20 +456,70 @@ var sammyApp = Sammy('#app_main', function() {
     }else context.redirect('#/');
   });
 
+  this.post('#/tray/:table', function(context) {
+    // DELETE / EDIT ITEM -- REDIRECT TO #/tray/:table
+  });
+
   this.get('#/orders', function(context) {
     if(auth()) {
       context.app.swap('');
       this.load('templates/header.hb').then(
         function(partial) {
-          context..partials = {header: partial};
+          context.partials = {header: partial};
+
+          context.headerText = "Select Table";
+          context.showTrayButton = false;
+          context.tables = getJSON('tables');          
+
+          context.partial('templates/orders.hb');
+        }
+      );
+    }else context.redirect('#/');
+  });
+
+  this.get('#/orders/:table', function(context) {
+    if(auth()) {
+      context.app.swap('');
+      this.load('templates/header.hb').then(
+        function(partial) {
+          context.partials = {header: partial};
 
           context.table_id = context.params.table;
-          context.headerText = "Orders for Table " + context.table_id;
+          context.headerText = "View Orders";
           context.showTrayButton = false;
+          // pass orders for table -- table_id (dummy)
+          context.load(apiUrl + '/orders/' + context.table_id, {
+            headers: {
+              'Authorization' : 'Bearer ' + getLocal('api_token')
+            }
+          })
+          .then(function(response) {
+            context.log(response)
+          });
+          context.tableOrder = {
+            "ordered_by":3,
+            "order_total":"222.0000",
+            "order_number":"9999",
+            "created_at":"2017-09-29 17:27:33",
+            "updated_at":"2017-09-29 17:27:33",
+            "orders": [
+              {
+                "id":1,
+                "qty":1,
+                "price":"99.0000",
+                "name":"Takoyaki"
+              },
+              {
+                "id":2,
+                "qty":1,
+                "price":"123.0000",
+                "name":"Yakiniku"
+              }
+            ]
+          }; 
+          console.log(context.tableOrder);
 
-          // orders object array
-
-          context.partial('templates/order.hb');
+          context.partial('templates/order_items.hb');
         }
       );
     }else context.redirect('#/');
@@ -462,6 +547,10 @@ Handlebars.registerHelper('arrayToString', function(object) {
     var output = notes_array.join();
     return output;
   }else return object;
+});
+
+Handlebars.registerHelper('timeForHumans', function(object) {
+  return moment(Date.parse(object)).format('hh:mm A');
 });
 
 function isJson(item) {

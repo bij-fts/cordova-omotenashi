@@ -4,13 +4,13 @@
   <div class="container">
     <div class="row">
       <div class="col-sm-12">
-        <form role="form" id="search-field">
-          <div class="form-group">
-            <input class="form-control input-search">
-            <button class="btn btn-default btn-search" type="button"><i class="fa fa-search"></i>
+        <div id="search-field">
+          <form role="form" id="menu_search" class="form-group" method="post" action="#/search">
+            <input name="term" class="form-control input-search">
+            <button class="btn btn-default btn-search" type="submit"><i class="fa fa-search"></i>
             </button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
     <div class="row">
@@ -20,7 +20,7 @@
           <div class="row">
             <div class="col-xs-4">
               <div class="product-img">
-                <img src="assets/images/prod1.jpg">
+                <img src="{{../host}}/storage/{{image_uri}}">
               </div>
             </div>
             <div class="col-xs-8 product-short-info">
@@ -28,7 +28,7 @@
               <h4>Php {{forHumans price}}</h4>
               <button class="btn btn-default btn-order btn-block" type="button" data-toggle="modal" data-target="#orderModal"
                 data-kitchenid="{{../kitchen_id}}" data-tableid="{{../table_id}}" data-menuprice="{{price}}"
-                data-menuname="{{name}}" data-menuid="{{id}}"
+                data-menuname="{{name}}" data-menuid="{{id}}" data-image="{{image_uri}}"
               >Order</button>
             </div>
             <div class="clearfix"></div>

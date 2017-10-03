@@ -17,7 +17,7 @@
        under the License.
  */
 
-package com.omotenashi.waiter;
+package com.omotenashi.gochuumon;
 
 import android.os.Bundle;
 import org.apache.cordova.*;

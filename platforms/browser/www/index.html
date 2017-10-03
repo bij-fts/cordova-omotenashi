@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>Omotenashi - Login</title>
+  <link rel="stylesheet" href="assets/css/bootstrap.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <link href="assets/css/scrolling-nav.css" rel="stylesheet">
+  <link href="assets/css/custom.css" rel="stylesheet">
+  <link href="assets/css/extra.css" rel="stylesheet">
+  <script type="text/javascript" src="cordova.js"></script>
+</head>
+<body>
+  <!-- Application entry point -->
+  <main id="app_main" class="wrapper"></main>
+
+  <!-- Do not put anything here -->
+
+  <div id="mySidenav" class="sidenav">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <div class="small-logo"><img src="assets/images/logo.png" class="pull-left"><h4 class="pull-left">Navigation</h4><div class="clearfix"></div></div>
+    <a href="#/tables" onclick="closeNav()">Table Menu</a>
+    <a href="#/transfer" onclick="closeNav()">Transfer Tables</a>
+    <a href="#/orders" onclick="closeNav()">Order Review</a>
+    <a href="#/logout">Sign Out</a>
+  </div>
+
+  <div class="modal order-product-modal" id="orderModal" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button class="close" data-dismiss="modal" type="button" onclick="closeMdl()">&times;</button>
+          <h4 class="modal-title">{Item Name}</h4>
+        </div>
+
+        <form id="order_form">
+          <div class="modal-body">
+            <div class="product-top-desc">
+              <div class="pull-left">
+                <h5 id="kitchen_name">@ {Store Name}</h5>
+              </div>
+
+              <div class="clearfix">
+              </div>
+            </div>
+
+            <div class="product-mid-details">
+              <div class="pull-left">
+                <h4>QTY:</h4>
+              </div>
+
+              <div class="pull-left">
+                <div class="input-group spinner">
+                  <input class="form-control" type="text" id="quantity" name="quantity" min="1" step="1" value="1">
+
+                  <div class="input-group-btn-vertical">
+                    <button class="btn btn-default" type="button"><i class="fa fa-caret-up"></i></button> <button class="btn btn-default" type="button"><i class="fa fa-caret-down"></i></button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="clearfix">
+              </div>
+            </div>
+
+            <div class="product-bottom-desc">
+              <div class="form-group">
+                <label>Add Note:</label>
+
+                <textarea class="form-control" placeholder="Note" id="notes" name="notes" rows="3" style="resize: none"></textarea>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <input type="hidden" id="menu_id" name="menu_id">
+              <input type="hidden" id="table_id" name="table_id">
+              <input type="hidden" id="menu_name" name="menu_name">
+              <input type="hidden" id="menu_price" name="menu_price">
+              <button class="btn btn-default btn-add-tray" onclick="addItem()" type="button">Place Order</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal order-product-modal col-xs-10 col-xs-offset-1" id="settingsModal" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button class="close" data-dismiss="modal" type="button">&times;</button>
+          <h4 class="modal-title">Connection Settings</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <h4 class="text-center">Enter Host IP:</h4>
+            <input class="form-control" placeholder="192.168.1.100" id="host" type="tel" minlength="9" maxlength="15">
+          </div>
+          <button class="btn btn-block btn-default btn-add-tray" id="saveSettings" onclick="saveSettings()" type="button">Update</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="assets/vendor/jquery/jquery.js"></script>
+  <script src="assets/js/sammy.js"></script>
+  <script src="assets/js/moment.js"></script>
+  <script src="assets/js/handlebars.js"></script>
+  <script src="assets/js/numeral.min.js"></script>
+  <script src="assets/js/plugins/sammy.handlebars.js"></script>
+  <script src="assets/js/plugins/sammy.storage.js"></script>
+  <script src="assets/js/plugins/sammy.json.js"></script>
+  <script src="assets/vendor/popper/popper.js"></script>
+  <script src="assets/vendor/bootstrap/js/bootstrap.min.js"></script>
+  <script src="assets/vendor/jquery-easing/jquery.easing.min.js"></script>
+  <script src="assets/js/scrolling-nav.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+  function saveSettings() {
+    var ip = $('#host').val();
+    if(ip !== "" || ip !== undefined || ip !== null) {
+      host = null;
+      host = 'http://' + ip;  
+      console.log(host);
+      $('#settingsModal').modal('hide');
+    }
+  }
+
+
+  $('#orderModal').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget);
+    var modal = $(this);
+
+    var temp = getJSON('data');
+    var kitchen = getObject(temp.kitchens, 'id', parseInt(button.data('kitchenid')));
+
+    modal.find('.modal-body #kitchen_name').html(kitchen.name);
+    modal.find('.modal-title').html(button.data('menuname'));
+
+    modal.find('#table_id').val(button.data('tableid'));
+    modal.find('#menu_price').val(button.data('menuprice'));
+    modal.find('#menu_id').val(button.data('menuid'));
+    modal.find('#menu_name').val(button.data('menuname'));
+
+  })
+
+  function openNav() {
+    document.getElementById("mySidenav").style.width = "200px";
+  }
+
+  function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+  }
+
+  (function ($) {
+    $('.spinner .btn:first-of-type').on('click', function() {
+      $('.spinner input').val( parseInt($('.spinner input').val(), 10) + 1);
+    });
+    $('.spinner .btn:last-of-type').on('click', function() {
+      if(parseInt($('.spinner input').val()) >= 2) {
+        $('.spinner input').val( parseInt($('.spinner input').val(), 10) - 1);
+      }
+    });
+  })(jQuery);
+  </script>
+</body>
+</html>
