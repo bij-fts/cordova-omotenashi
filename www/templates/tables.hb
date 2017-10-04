@@ -29,7 +29,7 @@ $('.table-holder').on('click', function() {
 });
 
 function checkTable(selection) {
-  if(parseInt(selection) === 2)
+  if(parseInt(selection) === 2 || parseInt(selection) === 0)
     window.location.href="#/tables";
 }
 </script>

@@ -5,8 +5,8 @@
     <div class="row">
       <div class="col-sm-12">
         <div id="search-field">
-          <form class="form-group" method="post" action="#/search">
-            <input class="form-control input-search">
+          <form role="form" id="menu_search" class="form-group" method="post" action="#/search">
+            <input name="term" class="form-control input-search" onclick="search({{table_id}})" placeholder="Search Menu">
             <button class="btn btn-default btn-search" type="submit"><i class="fa fa-search"></i>
             </button>
           </form>

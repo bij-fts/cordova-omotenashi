@@ -1,5 +1,5 @@
 <span class="pull-right">
-  <a data-target="#settingsModal" data-toggle="modal"><i class="material-icons btn-lg" style="color: #fe0002">settings</i></a>
+  <a data-target="#settingsModal" data-toggle="modal"><i class="fa fa-cog" aria-hidden="true"></i></a>
 </span>
 <section id="login">
   <div class="container">

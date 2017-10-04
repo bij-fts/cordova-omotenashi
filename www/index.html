@@ -8,8 +8,7 @@
   <meta name="author" content="">
   <title>Omotenashi - Login</title>
   <link rel="stylesheet" href="assets/css/bootstrap.css">
-  <!-- <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> -->
-  <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"> -->
+  <link href="assets/css/font-awesome.min.css" rel="stylesheet">
   <link href="assets/css/scrolling-nav.css" rel="stylesheet">
   <link href="assets/css/custom.css" rel="stylesheet">
   <link href="assets/css/extra.css" rel="stylesheet">
@@ -126,19 +125,17 @@
   function saveSettings() {
     var ip = $('#host').val();
     if(ip !== "" || ip !== undefined || ip !== null) {
-      host = null;
+      console.log(host);
+      window.localStorage.removeItem('host');
       host = 'http://' + ip;  
+      window.localStorage.setItem('host', host);
       console.log(host);
       $('#settingsModal').modal('hide');
     }
   }
 
-  $('.input-search').on('keydown', function() {
-    if($(this).val().length >= 3) {
-      $('.btn-search').prop('disabled', false);
-    }else {
-      $('.btn-search').prop('disabled', true);
-    }
+  $('.input-search').on('click', function() {
+    console.log('asd');
   });
 
   $('#orderModal').on('show.bs.modal', function (event) {
@@ -168,11 +165,10 @@
   }
 
   (function ($) {
-
-    $('.btn-search').prop('disabled', true);
     $('.spinner .btn:first-of-type').on('click', function() {
       $('.spinner input').val( parseInt($('.spinner input').val(), 10) + 1);
     });
+
     $('.spinner .btn:last-of-type').on('click', function() {
       if(parseInt($('.spinner input').val()) >= 2) {
         $('.spinner input').val( parseInt($('.spinner input').val(), 10) - 1);

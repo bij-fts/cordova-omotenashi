@@ -1,8 +1,15 @@
 .occupied {
-	border: 2px solid #CF3A24 !important;
+	border: 3px solid #fe0002 !important;
 }
 
 .table-holder {
-	border: 2px solid #19B5FE;
+	border: 3px solid #26A65B;
+}
+
+.fa-cog {
+	color: #fe0002; 
+	font-size: 2em; 
+	padding-right: .3em; 
+	padding-top: .3em;
 }
 
