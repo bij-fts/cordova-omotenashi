@@ -6,7 +6,7 @@
       <div class="col-sm-12">
         <div id="search-field">
           <form role="form" id="menu_search" class="form-group" method="post" action="#/search">
-            <input name="term" class="form-control input-search" onclick="search({{table_id}})" placeholder="Search Menu">
+            <input name="term" class="form-control input-search" onclick="search({{table_id}})" placeholder="Search All Menu">
             <button class="btn btn-default btn-search" type="submit"><i class="fa fa-search"></i>
             </button>
           </form>

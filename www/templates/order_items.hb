@@ -2,28 +2,59 @@
 
 <section id="kitchen-select" class="custom-padding">
 	<div class="container">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="pull-left">
+          <h4>Order#{{tableOrder.order_number}}</h4>
+        </div>
+        <div class="pull-right">
+          <h4>By: {{tableOrder.user.name}}</h4>
+        </div><br>
+        <div class="clearfix"></div>
+        <div class="pull-left">
+          <h4>Status: {{tableOrder.order_status.label}}</h4>
+        </div>
+        <div class="pull-right">
+          <h4>Paid: {{humanize tableOrder.has_paid}}</h4>
+        </div>
+      </div>
+    </div>
 		<div class="row">
       <div class="col-xs-12">
-  			<table class="table "> 
+  			<table class="table"> 
   				<thead>
   					<tr>
-  						<th>#</th>
   						<th>Name</th>
   						<th>Qty</th>
   						<th>Price</th>
   					</tr>
   				</thead>
   				<tbody>
-  					{{#each tableOrder.orders}}
+  					{{#each tableOrder.details}}
   					<tr>
-  						<th scope="row">{{id}}</th>
   						<td>{{name}}</td>
   						<td>{{qty}}</td>
-  						<td>P {{forHumans price}}</td>
+  						<td>Php {{forHumans regular_price}}</td>
   					</tr>
   					{{/each}}
   				</tbody>
   			</table>
+
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="pull-left">
+              <button class="btn btn-default btn-order" onclick="window.location.href='#/tables/2'">Add Order</button>
+            </div>
+            <div class="pull-right">
+              <h4>
+              <strong>
+              Php {{forHumans tableOrder.order_total}}
+              </strong>
+              </h4>
+            </div>
+          </div>
+        </div>
+
       </div>
 		</div>
 	</div>

@@ -6,7 +6,7 @@
       <div class="col-sm-12">
         <div id="search-field">
           <form role="form" id="menu_search" class="form-group" method="post" action="#/search">
-            <input name="term" class="form-control input-search" onclick="search({{table_id}})" placeholder="Search Menu">
+            <input name="term" class="form-control input-search" onclick="search({{table_id}})" placeholder="Search All Menu">
             <button class="btn btn-default btn-search" type="submit"><i class="fa fa-search"></i>
             </button>
           </form>
@@ -51,7 +51,7 @@
         <form id="submit_order">
           <input type="hidden" name="table_id" id="table_id" value="{{table_id}}">
         </form>
-        <h4><a class="text-sucess" disabled="true" onclick="quickOrder()">Place Order</a></h4>
+        <h4><a class="text-success" onclick="quickOrder()">Place Order</a></h4>
       </div>
 
       <div class="clearfix">

@@ -24,7 +24,7 @@
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
     <div class="small-logo"><img src="assets/images/logo.png" class="pull-left"><h4 class="pull-left">Navigation</h4><div class="clearfix"></div></div>
     <a href="#/tables" onclick="closeNav()">Table Menu</a>
-    <a href="#/transfer" onclick="closeNav()">Transfer Tables</a>
+    <a data-toggle="modal" data-target="#transferModal" onclick="closeNav()">Transfer Tables</a>
     <a href="#/orders" onclick="closeNav()">Order Review</a>
     <a href="#/logout">Sign Out</a>
   </div>
@@ -48,7 +48,7 @@
               </div>
             </div>
 
-            <div class="product-mid-details">
+            <div class="product-mid-details text-center">
               <div class="pull-left">
                 <h4>QTY:</h4>
               </div>
@@ -67,13 +67,13 @@
               </div>
             </div>
 
-            <div class="product-bottom-desc">
+<!--             <div class="product-bottom-desc">
               <div class="form-group">
                 <label>Add Note:</label>
 
                 <textarea class="form-control" placeholder="Note" id="notes" name="notes" rows="3" style="resize: none"></textarea>
               </div>
-            </div>
+            </div> -->
 
             <div class="modal-footer">
               <input type="hidden" id="menu_id" name="menu_id">
@@ -81,7 +81,7 @@
               <input type="hidden" id="menu_name" name="menu_name">
               <input type="hidden" id="menu_price" name="menu_price">
               <input type="hidden" id="image" name="image">
-              <button class="btn btn-default btn-add-tray" onclick="addItem()" type="button">Add to Tray</button>
+              <button class="btn btn-lg btn-default btn-block btn-add-tray" onclick="addItem()" type="button">Add to Tray</button>
             </div>
           </form>
         </div>
@@ -89,7 +89,7 @@
     </div>
   </div>
 
-  <div class="modal order-product-modal col-xs-10 col-xs-offset-1" id="settingsModal" role="dialog">
+  <div class="modal order-product-modal" id="settingsModal" role="dialog">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -97,11 +97,48 @@
           <h4 class="modal-title">Connection Settings</h4>
         </div>
         <div class="modal-body">
-          <div class="form-group">
-            <h4 class="text-center">Enter Host IP:</h4>
-            <input class="form-control" placeholder="192.168.1.100" id="host" type="tel" minlength="9" maxlength="15">
-          </div>
-          <button class="btn btn-block btn-default btn-add-tray" id="saveSettings" onclick="saveSettings()" type="button">Update</button>
+          <form id="host_settings">
+            <div class="form-group">
+              <h4 class="text-center">Enter Host IP:</h4>
+              <input class="form-control" placeholder="192.168.1.1" id="host" type="tel" minlength="11" maxlength="15">
+            </div>
+            <button class="btn btn-block btn-default btn-add-tray" id="saveSettings" type="submit">Save</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal order-product-modal" id="transferModal" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button class="close" data-dismiss="modal" type="button">&times;</button>
+          <h4 class="modal-title">Transfer Tables</h4>
+        </div>
+        <div class="modal-body">
+          <form id="transfer_form">
+            <div class="product-top-desc row">
+              <div class="col-xs-6">
+                <div class="form-group">
+                  <h3>Occupied:</h4>
+                  <select name="occupied" id="select_occupied" class="form-control">
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-xs-6">
+                <div class="form-group">
+                  <h3>Vacant:</h4>
+                  <select name="vacant" id="select_vacant" class="form-control">
+                  </select>
+                </div>
+              </div>
+              <div class="clearfix">
+              </div>
+            </div>
+
+            <button class="btn btn-block btn-lg btn-default btn-add-tray" type="submit">Transfer</button>
+          </form>
         </div>
       </div>
     </div>
@@ -122,57 +159,118 @@
   <script src="assets/js/scrolling-nav.js"></script>
   <script src="assets/js/app.js"></script>
   <script>
-  function saveSettings() {
-    var ip = $('#host').val();
-    if(ip !== "" || ip !== undefined || ip !== null) {
-      console.log(host);
-      window.localStorage.removeItem('host');
-      host = 'http://' + ip;  
-      window.localStorage.setItem('host', host);
-      console.log(host);
-      $('#settingsModal').modal('hide');
-    }
-  }
+  $('#transferModal').on('show.bs.modal', function() {
+    closeNav();
+    document.getElementById('transfer_form').reset();
+    $.ajax({
+      url: apiUrl + '/tables',
+      method: 'GET',
+      headers: {
+        'Authorization' : 'Bearer ' + getLocal('api_token')
+      },
+      success: function(response) {
+        var tables = response;
+        
+        $('#select_occupied').empty();
+        $('#select_vacant').empty();
 
-  $('.input-search').on('click', function() {
-    console.log('asd');
+        for(var i = 0; i < tables.length; i++) {
+          if(tables[i].vacant_or_occupied == "occupied") {
+            $('#select_occupied').append($('<option>', {value:tables[i].id, text:"Table " + tables[i].name}));
+          }else {
+            $('#select_vacant').append($('<option>', {value:tables[i].id, text:"Table " + tables[i].name}));
+          }
+        }
+      },
+      error: function(response) {
+        alert(response);
+      }
+    });
   });
 
+  $('#transfer_form').on('submit', function(event) {
+    event.preventDefault();
+    var data = $(this).serialize();
+    
+    $.ajax({
+      url: apiUrl + '/orders/transfer',
+      method: 'POST',
+      data: data,
+      headers: {
+        'Authorization' : 'Bearer ' + getLocal('api_token')
+      },
+      beforeSend: function() {
+        var options = { dimBackground: true };
+        SpinnerPlugin.activityStart('Loading...', options);
+      },
+      complete: function() {
+        SpinnerPlugin.activityStop();
+      },
+      success: function(response) {
+        cordova.plugins.snackbar('Table transfer successful', 'LONG', '', function(){});
+        $('#transferModal').modal('hide');
+      },
+      error: function(response) {
+        alert(response);
+      }
+    })
+  });
+
+  $('#host_settings').on('submit', function(event) {
+    event.preventDefault();
+
+    var ip = $('#host').val();
+    window.localStorage.removeItem('host');
+    newURL = 'http://' + ip;  
+    window.localStorage.setItem('host', newURL);
+
+    navigator.notification
+    .confirm(
+      'Is ' + newURL + ' the new address?', 
+      function(selection) {
+        if(parseInt(selection) === 1) {          
+          confirmClose()
+        }
+      },
+      'Confirm',
+      ['Yes', 'No']
+    );
+  });
+
+  function confirmClose() {
+    navigator.notification
+    .alert(
+      'Application needs to exit to save changes. Please launch the application again',
+      function() {
+        navigator.app.exitApp();
+        $('#settingsModal').modal('hide');
+      },
+      'Restart Application',
+      ['Okay']
+    );
+  }
+
   $('#orderModal').on('show.bs.modal', function (event) {
+    document.getElementById('order_form').reset();
     var button = $(event.relatedTarget);
     var modal = $(this);
 
-    var temp = getJSON('data');
-    var kitchen = getObject(temp.kitchens, 'id', parseInt(button.data('kitchenid')));
-
     modal.find('.modal-body #kitchen_name').html('');
     modal.find('.modal-title').html(button.data('menuname'));
-
     modal.find('#table_id').val(button.data('tableid'));
     modal.find('#menu_price').val(button.data('menuprice'));
     modal.find('#menu_id').val(button.data('menuid'));
     modal.find('#menu_name').val(button.data('menuname'));
     modal.find('#image').val(button.data('image'));
-
-  })
-
-  function openNav() {
-    document.getElementById("mySidenav").style.width = "200px";
-  }
-
-  function closeNav() {
-    document.getElementById("mySidenav").style.width = "0";
-  }
-
+  });
+  function openNav() { document.getElementById("mySidenav").style.width = "200px"; }
+  function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
   (function ($) {
     $('.spinner .btn:first-of-type').on('click', function() {
       $('.spinner input').val( parseInt($('.spinner input').val(), 10) + 1);
     });
-
     $('.spinner .btn:last-of-type').on('click', function() {
-      if(parseInt($('.spinner input').val()) >= 2) {
-        $('.spinner input').val( parseInt($('.spinner input').val(), 10) - 1);
-      }
+      if(parseInt($('.spinner input').val()) >= 2) $('.spinner input').val( parseInt($('.spinner input').val(), 10) - 1);
     });
   })(jQuery);
   </script>

@@ -6,7 +6,7 @@
       <div class="col-sm-12">
         <div id="search-field">
           <form class="form-group" id="search" method="post" action="#/table/{{table_id}}/search">
-            <input name="term" class="form-control input-search" placeholder="Search Menu">
+            <input name="term" class="form-control input-search" placeholder="Search All Menu">
             <a class="btn btn-default btn-search"><i class="fa fa-search"></i>
             </a>
           </form>
@@ -25,6 +25,7 @@
             </div>
             <div class="col-xs-8 product-short-info">
               <h3>{{name}}</h3>
+              <h4><strong>{{kitchen.name}}</h4></strong>
               <h4>Php {{forHumans price}}</h4>
               <button class="btn btn-default btn-order btn-block" type="button" data-toggle="modal" data-target="#orderModal"
                 data-kitchenid="{{kitchen_id}}" data-tableid="{{../table_id}}" data-menuprice="{{price}}"
@@ -36,7 +37,9 @@
         </div>
       </div>
     {{else}}
-      <h3>No Results</h3>
+      <div style="height: 100%">
+        <h3 class="text-center">No results</h3>
+      </div>
     {{/each}}
     </div>
   </div>
