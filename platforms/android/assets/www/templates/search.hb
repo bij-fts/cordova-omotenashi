@@ -20,7 +20,7 @@
           <div class="row">
             <div class="col-xs-4">
               <div class="product-img">
-                <img src="{{../host}}/storage/{{image_uri}}">
+                <img src="{{../host}}/{{image_uri}}">
               </div>
             </div>
             <div class="col-xs-8 product-short-info">

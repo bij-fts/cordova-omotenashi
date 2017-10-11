@@ -4,13 +4,13 @@
   <div class="container">
     <div class="row">
       <div class="col-sm-12">
-        <form role="form">
-          <div class="form-group">
-            <input class="form-control input-search" placeholder="Search">
-            <button class="btn btn-default btn-search" type="button"><i class="fa fa-search"></i>
+        <div id="search-field">
+          <form role="form" id="menu_search" class="form-group" method="post" action="#/search">
+            <input name="term" class="form-control input-search" onclick="search({{table_id}})" placeholder="Search All Menu">
+            <button class="btn btn-default btn-search" type="submit"><i class="fa fa-search"></i>
             </button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
     <div class="row">

@@ -1,5 +1,5 @@
 <span class="pull-right">
-  <a data-target="#settingsModal" data-toggle="modal"><i class="material-icons btn-lg" style="color: #fe0002">settings</i></a>
+  <a onclick="changeSettings()"><i class="fa fa-cog" aria-hidden="true"></i></a>
 </span>
 <section id="login">
   <div class="container">
@@ -12,12 +12,12 @@
         <div class="panel-body">
           <form role="form" method="post" action="#/" id="loginForm">
             <div class="form-group">
-              <input class="form-control" value="somedude" placeholder="Username" name="username" type="text" autofocus>
+              <input class="form-control" placeholder="Username" name="username" type="text" autofocus>
             </div>
             <div class="form-group">
-              <input class="form-control" value="secret" placeholder="Password" name="password" type="password">
+              <input class="form-control" placeholder="Password" name="password" type="password">
             </div>
-            <button type="submit" id="loginBtn" class="btn btn-xs btn-danger btn-block">Login</a>
+            <button type="submit" id="loginBtn" class="btn btn-lg btn-danger btn-block">Login</a>
           </form>
         </div>
       </div>

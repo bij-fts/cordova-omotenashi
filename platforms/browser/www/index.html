@@ -8,17 +8,67 @@
   <meta name="author" content="">
   <title>Omotenashi - Login</title>
   <link rel="stylesheet" href="assets/css/bootstrap.css">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet">
-  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <link href="assets/css/font-awesome.min.css" rel="stylesheet">
   <link href="assets/css/scrolling-nav.css" rel="stylesheet">
   <link href="assets/css/custom.css" rel="stylesheet">
   <link href="assets/css/extra.css" rel="stylesheet">
   <script type="text/javascript" src="cordova.js"></script>
+  <style>
+  .modal-dialog {
+    padding-top: 80px;
+  }
+  .input-group-btn .fa {
+    font-size: 14px;
+  }
+  .checkbox label {
+    font-size: 16px;
+  }
+  .md-checkbox {
+    position: relative;
+    /*margin: 16px 0;*/
+  }
+  .md-checkbox label {
+    cursor: pointer;
+  }
+  .md-checkbox label:before, .md-checkbox label:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+  .md-checkbox label:before {
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    border: 2px solid rgba(0, 0, 0, 0.54);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background .3s;
+  }
+  .md-checkbox input[type="checkbox"] {
+    outline: 0;
+    margin-right: 10px;
+  }
+  .md-checkbox input[type="checkbox"]:checked + label:before {
+    background: #fe0002;
+    border: none;
+  }
+  .md-checkbox input[type="checkbox"]:checked + label:after {
+    transform: rotate(-45deg);
+    top: 5px;
+    left: 4px;
+    width: 12px;
+    height: 6px;
+    border: 2px solid #fff;
+    border-top-style: none;
+    border-right-style: none;
+  }
+
+  </style>
 </head>
 <body>
   <!-- Application entry point -->
-  <main id="app_main" class="wrapper"></main>
+  <main id="app_main"></main>
 
   <!-- Do not put anything here -->
 
@@ -26,71 +76,12 @@
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
     <div class="small-logo"><img src="assets/images/logo.png" class="pull-left"><h4 class="pull-left">Navigation</h4><div class="clearfix"></div></div>
     <a href="#/tables" onclick="closeNav()">Table Menu</a>
-    <a href="#/transfer" onclick="closeNav()">Transfer Tables</a>
+    <a data-toggle="modal" data-target="#transferTable" onclick="closeNav()">Transfer Tables</a>
     <a href="#/orders" onclick="closeNav()">Order Review</a>
     <a href="#/logout">Sign Out</a>
   </div>
 
-  <div class="modal order-product-modal" id="orderModal" role="dialog">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button class="close" data-dismiss="modal" type="button" onclick="closeMdl()">&times;</button>
-          <h4 class="modal-title">{Item Name}</h4>
-        </div>
-
-        <form id="order_form">
-          <div class="modal-body">
-            <div class="product-top-desc">
-              <div class="pull-left">
-                <h5 id="kitchen_name">@ {Store Name}</h5>
-              </div>
-
-              <div class="clearfix">
-              </div>
-            </div>
-
-            <div class="product-mid-details">
-              <div class="pull-left">
-                <h4>QTY:</h4>
-              </div>
-
-              <div class="pull-left">
-                <div class="input-group spinner">
-                  <input class="form-control" type="text" id="quantity" name="quantity" min="1" step="1" value="1">
-
-                  <div class="input-group-btn-vertical">
-                    <button class="btn btn-default" type="button"><i class="fa fa-caret-up"></i></button> <button class="btn btn-default" type="button"><i class="fa fa-caret-down"></i></button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="clearfix">
-              </div>
-            </div>
-
-            <div class="product-bottom-desc">
-              <div class="form-group">
-                <label>Add Note:</label>
-
-                <textarea class="form-control" placeholder="Note" id="notes" name="notes" rows="3" style="resize: none"></textarea>
-              </div>
-            </div>
-
-            <div class="modal-footer">
-              <input type="hidden" id="menu_id" name="menu_id">
-              <input type="hidden" id="table_id" name="table_id">
-              <input type="hidden" id="menu_name" name="menu_name">
-              <input type="hidden" id="menu_price" name="menu_price">
-              <button class="btn btn-default btn-add-tray" onclick="addItem()" type="button">Place Order</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal order-product-modal col-xs-10 col-xs-offset-1" id="settingsModal" role="dialog">
+  <div class="modal order-product-modal" id="settingsModal" role="dialog">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -98,11 +89,46 @@
           <h4 class="modal-title">Connection Settings</h4>
         </div>
         <div class="modal-body">
-          <div class="form-group">
-            <h4 class="text-center">Enter Host IP:</h4>
-            <input class="form-control" placeholder="192.168.1.100" id="host" type="tel" minlength="9" maxlength="15">
-          </div>
-          <button class="btn btn-block btn-default btn-add-tray" id="saveSettings" onclick="saveSettings()" type="button">Update</button>
+          <form id="host_settings">
+            <div class="form-group">
+              <h4 class="text-center">Enter Host IP:</h4>
+              <input class="form-control" placeholder="192.168.1.1" id="host" type="tel" minlength="11" maxlength="15">
+            </div>
+            <button class="btn btn-block btn-default btn-add-tray" id="saveSettings" type="submit">Save</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal order-product-modal" id="transferTable" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button class="close" data-dismiss="modal" type="button">&times;</button>
+          <h4 class="modal-title">Transfer Tables</h4>
+        </div>
+        <div class="modal-body">
+          <form id="transfer_form">
+            <div class="product-top-desc row">
+              <div class="col-xs-6">
+                <div class="form-group">
+                  <h3>Occupied:</h4>
+                  <select disabled name="occupied" id="select_occupied" class="form-control"></select>
+                </div>
+              </div>
+
+              <div class="col-xs-6">
+                <div class="form-group">
+                  <h3>Vacant:</h4>
+                  <select disabled name="vacant" id="select_vacant" class="form-control"></select>
+                </div>
+              </div>
+              <div class="clearfix">
+              </div>
+            </div>
+
+            <button class="btn btn-block btn-lg btn-default btn-add-tray" type="submit">Transfer</button>
+          </form>
         </div>
       </div>
     </div>
@@ -113,6 +139,7 @@
   <script src="assets/js/sammy.js"></script>
   <script src="assets/js/moment.js"></script>
   <script src="assets/js/handlebars.js"></script>
+  <script src="assets/js/socket.io.js"></script>
   <script src="assets/js/numeral.min.js"></script>
   <script src="assets/js/plugins/sammy.handlebars.js"></script>
   <script src="assets/js/plugins/sammy.storage.js"></script>
@@ -123,52 +150,126 @@
   <script src="assets/js/scrolling-nav.js"></script>
   <script src="assets/js/app.js"></script>
   <script>
-  function saveSettings() {
-    var ip = $('#host').val();
-    if(ip !== "" || ip !== undefined || ip !== null) {
-      host = null;
-      host = 'http://' + ip;  
-      console.log(host);
-      $('#settingsModal').modal('hide');
-    }
+  function changeSettings() {
+    var host = prompt("Please enter new address:", window.localStorage.getItem('host'));
+    window.localStorage.setItem('host', host);
+  }
+  var selected = [];
+
+  function clearForm() {
+    $('form input').val();
+    $('form textarea').val();
+    $('form textarea').empty();
+    // $('form input[type="number"]').val(parseInt($('form input[type="number"]').prop('max')));
+    $('#orderModal').modal('hide');
+    selected = [];
   }
 
+  $('#transferTable').on('show.bs.modal', function() {
+    $('section').removeClass('hidden');
+  });
+  $('#transferTable').on('show.bs.modal', function() {
+    closeNav();
+    $('section').addClass('hidden');
+    document.getElementById('transfer_form').reset();
+    $.ajax({
+      url: apiUrl + '/tables',
+      method: 'GET',
+      headers: {
+        'Authorization' : 'Bearer ' + getLocal('api_token')
+      },
+      success: function(response) {
+        var tables = response;
 
-  $('#orderModal').on('show.bs.modal', function (event) {
-    var button = $(event.relatedTarget);
-    var modal = $(this);
+        $('#select_occupied').empty();
+        $('#select_vacant').empty();
 
-    var temp = getJSON('data');
-    var kitchen = getObject(temp.kitchens, 'id', parseInt(button.data('kitchenid')));
-
-    modal.find('.modal-body #kitchen_name').html(kitchen.name);
-    modal.find('.modal-title').html(button.data('menuname'));
-
-    modal.find('#table_id').val(button.data('tableid'));
-    modal.find('#menu_price').val(button.data('menuprice'));
-    modal.find('#menu_id').val(button.data('menuid'));
-    modal.find('#menu_name').val(button.data('menuname'));
-
-  })
-
-  function openNav() {
-    document.getElementById("mySidenav").style.width = "200px";
-  }
-
-  function closeNav() {
-    document.getElementById("mySidenav").style.width = "0";
-  }
-
-  (function ($) {
-    $('.spinner .btn:first-of-type').on('click', function() {
-      $('.spinner input').val( parseInt($('.spinner input').val(), 10) + 1);
-    });
-    $('.spinner .btn:last-of-type').on('click', function() {
-      if(parseInt($('.spinner input').val()) >= 2) {
-        $('.spinner input').val( parseInt($('.spinner input').val(), 10) - 1);
+        for(var i = 0; i < tables.length; i++) {
+          if(tables[i].vacant_or_occupied == "occupied") {
+            $('#select_occupied').append($('<option>', {value:tables[i].id, text:"Table " + tables[i].name}));
+          }else {
+            $('#select_vacant').append($('<option>', {value:tables[i].id, text:"Table " + tables[i].name}));
+          }
+        }
+        if(parseInt(document.getElementById('select_occupied').length) < 1) $('#select_occupied').prop('disabled', true);
+        if(!$('#select_occupied').prop('disabled')) $('#select_vacant').prop('disabled', false);
+      },
+      error: function(response) {
+        alert(response);
       }
     });
-  })(jQuery);
+  });
+
+  if(getLocal('host') == null) {
+    var host = prompt("Please enter hosts address:", "http://192.168.");
+    window.localStorage.setItem('host', host);
+  }
+
+  $('#transfer_form').submit(function(event) {
+    event.preventDefault();
+    var data = $(this).serialize();
+
+    $.ajax({
+      url: apiUrl + '/orders/transfer',
+      method: 'POST',
+      data: data,
+      headers: {
+        'Authorization' : 'Bearer ' + getLocal('api_token')
+      },
+      beforeSend: function() {
+        var options = { dimBackground: true };
+        SpinnerPlugin.activityStart('Loading...', options);
+      },
+      complete: function() {
+        SpinnerPlugin.activityStop();
+      },
+      success: function(response) {
+        cordova.plugins.snackbar('Table transfer successful', 'LONG', '', function(){});
+        $('#transferModal').modal('hide');
+      },
+      error: function(response) {
+        alert(response);
+      }
+    })
+  });
+
+  $('#host_settings').on('submit', function(event) {
+    event.preventDefault();
+
+    var ip = $('#host').val();
+    window.localStorage.removeItem('host');
+    newURL = 'http://' + ip;
+    window.localStorage.setItem('host', newURL);
+
+    navigator.notification
+    .confirm(
+      'Is ' + newURL + ' the new address?',
+      function(selection) {
+        if(parseInt(selection) === 1) {
+          confirmClose()
+        }
+      },
+      'Confirm',
+      ['Yes', 'No']
+    );
+  });
+
+  function confirmClose() {
+    navigator.notification
+    .alert(
+      'Application needs to exit to save changes. Please launch the application again',
+      function() {
+        navigator.app.exitApp();
+        $('#settingsModal').modal('hide');
+      },
+      'Restart Application',
+      ['Okay']
+    );
+  }
+
+  function openNav() { document.getElementById("mySidenav").style.width = "200px"; }
+  function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
+
   </script>
 </body>
 </html>

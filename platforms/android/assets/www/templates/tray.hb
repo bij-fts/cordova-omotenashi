@@ -10,17 +10,17 @@
           <div class="row">
             <div class="col-xs-4">
               <div class="product-img">
-                <img class="img-responsive" src="{{../host}}/storage/{{image_uri}}">
+                <img class="img-responsive" src="{{../host}}/{{image_uri}}">
               </div>
             </div>
             <div class="col-xs-8 product-short-info">
               <h3>{{menu}}</h3>
               <h5><strong>QTY: </strong><span id="trayQty">{{qty}}</span></h5>
               <h5><strong>Price: </strong>Php {{forHumans price}}</h5>
+              <h5 class="product-note"><strong>Notes:</strong> {{arrayToString notes}}</h5>
               <a class="remove-item-btn" data-menu="{{menu}}" data-tableId="{{../table_id}}" data-itemId="{{menu_id}}">Remove</a>
               <a class="edit-item-btn" data-menu="{{menu}}" data-qty="{{qty}}" data-tableId="{{../table_id}}" data-itemId="{{menu_id}}" data-toggle="modal" data-target="#editModal">Edit</a>
             </div>
-            <div class="col-xs-12 product-note"></div>
             <div class="clearfix"></div>
           </div>
         </div>
@@ -79,7 +79,7 @@
             <input type="hidden" id="menu">
             <input type="hidden" id="table_id">
             <div class="input-group spinner">
-              <input class="form-control" type="tel" id="quantity" name="quantity" min="1" step="1" value="1">
+              <input class="form-control" type="number" id="quantity" name="quantity" min="1" step="1" value="1">
               <div class="input-group-btn-vertical">
                 <button class="btn btn-default" type="button"><i class="fa fa-caret-up"></i></button> <button class="btn btn-default" type="button"><i class="fa fa-caret-down"></i></button>
               </div>
@@ -88,13 +88,13 @@
           <div class="clearfix">
           </div>
         </div>
-<!--         <div class="product-bottom-desc">
+        <div class="product-bottom-desc">
           <div class="form-group">
             <label>Add Note:</label>
 
             <textarea class="form-control" placeholder="Note" id="notes" name="notes" rows="3" style="resize: none"></textarea>
           </div>
-        </div> -->
+        </div>
         <button class="btn btn-block btn-lg btn-default btn-add-tray" onclick="editItem()" type="button">Update</button>
       </div>
     </div>
@@ -118,9 +118,9 @@ $('#editModal').on('show.bs.modal', function (event) {
     var menu = $(this).data('menu');
 
     navigator.notification.confirm(
-      'This action cannot be undone',
+      'Are you sure?',
       function(selection) {
-        if(parseInt(selection) === 2) {
+        if(parseInt(selection) === 1) {
           var tray = getTray(table_id);
           tray.orders.splice(getObjectIndex(tray.orders, 'menu_id', item_id), 1);
 
@@ -129,13 +129,13 @@ $('#editModal').on('show.bs.modal', function (event) {
 
           cordova.plugins.snackbar('Removed "' + menu + '"', 'LONG', '', function() {});
           $(event.target).closest("div .product-holder").remove();
-          if(tray.orders.length < 1) {
-            alert('No items in the tray');
-          }
+          // if(tray.orders.length < 1) {
+          //   window.history.back();
+          // }
         }
       },
       'Remove item',
-      ['Cancel','Remove']
+      ['Yes','No']
     );
   });
 
@@ -151,6 +151,7 @@ $('#editModal').on('show.bs.modal', function (event) {
     $('#trayQty').html(qty);
     $('#editModal').modal('hide');
     cordova.plugins.snackbar('Updated "' + menu + '"', 'LONG', '', function() {});
+
     updateTotal(tray);
     setTray(tray);
   }

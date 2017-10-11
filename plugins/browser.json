@@ -1,0 +1,22 @@
+{
+    "prepare_queue": {
+        "installed": [],
+        "uninstalled": []
+    },
+    "config_munge": {
+        "files": {}
+    },
+    "installed_plugins": {
+        "de.appplant.cordova.plugin.local-notification": {
+            "PACKAGE_NAME": "com.omotenashi.gochuumon"
+        },
+        "cordova-plugin-device": {
+            "PACKAGE_NAME": "com.omotenashi.gochuumon"
+        }
+    },
+    "dependent_plugins": {
+        "cordova-plugin-app-event": {
+            "PACKAGE_NAME": "com.omotenashi.gochuumon"
+        }
+    }
+}

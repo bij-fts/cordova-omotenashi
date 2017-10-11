@@ -43,7 +43,7 @@
         <div class="row">
           <div class="col-xs-12">
             <div class="pull-left">
-              <button class="btn btn-default btn-order" onclick="window.location.href='#/tables/2'">Add Order</button>
+              <a class="btn btn-default btn-order" href="#/tables/{{table_id}}">Add Order</a>
             </div>
             <div class="pull-right">
               <h4>
@@ -59,3 +59,5 @@
 		</div>
 	</div>
 </section>
+
+<script type=""></script>

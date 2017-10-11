@@ -19,6 +19,12 @@
     <feature name="MaterialSnackbar">
         <param name="android-package" value="com.materialSnackbar.MaterialSnackbar" />
     </feature>
+    <feature name="Device">
+        <param name="android-package" value="org.apache.cordova.device.Device" />
+    </feature>
+    <feature name="LocalNotification">
+        <param name="android-package" value="de.appplant.cordova.plugin.localnotification.LocalNotification" />
+    </feature>
     <name>Waiter</name>
     <allow-navigation href="*" />
     <access origin="*" />
