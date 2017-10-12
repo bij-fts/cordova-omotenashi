@@ -194,7 +194,7 @@
           }
         }
         if(parseInt(document.getElementById('select_occupied').length) < 1) $('#select_occupied').prop('disabled', true);
-        if(!$('#select_occupied').prop('disabled')) $('#select_vacant').prop('disabled', false);
+        if($('#select_occupied').prop('disabled')) $('#select_vacant').prop('disabled', false);
       },
       error: function(response) {
         alert(response);

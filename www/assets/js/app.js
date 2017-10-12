@@ -14,12 +14,14 @@ var app = {
 
     cordova.plugins.notification.local.on('trigger', function (notification) {
       // Tell Node Server specified device received notification
+      navigator.vibrate([1000,1000,1000]);
       socket.emit('notification/received', device.uuid);
     }, this);
 
     cordova.plugins.notification.local.on('click', function (notification) {
       // Redirect to page in waiter app that displays all "completed" orders
-      window.location.assign('#/completed');
+      alert(notification.data);
+      // window.location.assign('#/completed');
     }, this);
   },
   receivedEvent: function(id) {}
@@ -649,9 +651,5 @@ function forHumans(price) {
 }
 
 socket.on('order/complete', function(data) {
-  cordova.plugins.notification.local.schedule({
-    title: data.title,
-    text: data.text,
-    icon: data.icon
-  });
+  cordova.plugins.notification.local.schedule(data);
 });
