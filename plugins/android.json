@@ -1,40 +1,40 @@
 {
-    "prepare_queue": {
-        "installed": [],
-        "uninstalled": []
+  "prepare_queue": {
+    "installed": [],
+    "uninstalled": []
+  },
+  "config_munge": {
+    "files": {}
+  },
+  "installed_plugins": {
+    "cordova-plugin-whitelist": {
+      "PACKAGE_NAME": "com.omotenashi.waiter"
     },
-    "config_munge": {
-        "files": {}
+    "cordova-plugin-dialogs": {
+      "PACKAGE_NAME": "com.omotenashi.waiter"
     },
-    "installed_plugins": {
-        "cordova-plugin-whitelist": {
-            "PACKAGE_NAME": "com.omotenashi.waiter"
-        },
-        "cordova-plugin-dialogs": {
-            "PACKAGE_NAME": "com.omotenashi.waiter"
-        },
-        "cordova-plugin-x-toast": {
-            "PACKAGE_NAME": "com.omotenashi.waiter"
-        },
-        "cordova-plugin-spinner": {
-            "PACKAGE_NAME": "com.omotenashi.waiter"
-        },
-        "cordova-plugin-network-information": {
-            "PACKAGE_NAME": "com.omotenashi.waiter"
-        },
-        "cordova-plugin-snackbar": {
-            "PACKAGE_NAME": "com.omotenashi.waiter"
-        },
-        "de.appplant.cordova.plugin.local-notification": {
-            "PACKAGE_NAME": "com.omotenashi.gochuumon"
-        },
-        "cordova-plugin-device": {
-            "PACKAGE_NAME": "com.omotenashi.gochuumon"
-        }
+    "cordova-plugin-x-toast": {
+      "PACKAGE_NAME": "com.omotenashi.waiter"
     },
-    "dependent_plugins": {
-        "cordova-plugin-app-event": {
-            "PACKAGE_NAME": "com.omotenashi.gochuumon"
-        }
+    "cordova-plugin-spinner": {
+      "PACKAGE_NAME": "com.omotenashi.waiter"
+    },
+    "cordova-plugin-network-information": {
+      "PACKAGE_NAME": "com.omotenashi.waiter"
+    },
+    "cordova-plugin-snackbar": {
+      "PACKAGE_NAME": "com.omotenashi.waiter"
+    },
+    "cordova-plugin-device": {
+      "PACKAGE_NAME": "com.omotenashi.gochuumon"
+    },
+    "de.appplant.cordova.plugin.local-notification": {
+      "PACKAGE_NAME": "com.omotenashi.gochuumon"
     }
+  },
+  "dependent_plugins": {
+    "cordova-plugin-app-event": {
+      "PACKAGE_NAME": "com.omotenashi.gochuumon"
+    }
+  }
 }

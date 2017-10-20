@@ -5,31 +5,24 @@ var socket = io(host + ':3000');
 var app = {
   initialize: function() { document.addEventListener('deviceready', this.onDeviceReady.bind(this), false); },
   onDeviceReady: function() { this.receivedEvent('deviceready');
-    jQuery(function() {
-      sammyApp.run('#/tables');
-      $('#loginForm').submit(function(event) {
-        event.preventDefault();
-      });
-    });
-
-    cordova.plugins.notification.local.on('trigger', function (notification) {
-      // Tell Node Server specified device received notification
-      navigator.vibrate([1000,1000,1000]);
-      socket.emit('notification/received', device.uuid);
-    }, this);
-
-    cordova.plugins.notification.local.on('click', function (notification) {
-      // Redirect to page in waiter app that displays all "completed" orders
-      alert(notification.data);
-      // window.location.assign('#/completed');
-    }, this);
   },
   receivedEvent: function(id) {}
 }.initialize();
+    /* START */
+    // cordova.plugins.notification.local.on('trigger', function (notification) {
+    //   // Tell Node Server specified device received notification
+    //   navigator.vibrate([1000,1000,1000]);
+    //   socket.emit('notification/received', device.uuid);
+    // }, this);
+
+    // cordova.plugins.notification.local.on('click', function (notification) {
+    //   // Redirect to page in waiter app that displays all "completed" orders
+    //   console.log(notification);
+    //   // window.location.assign('#/completed');
+    // }, this);
+    /* END */
 var port = '8000';
 var apiUrl = host + ':' + port + '/api';
-
-
 
 var sammyApp = Sammy('#app_main', function() {
   this.use('Handlebars', 'hb');
@@ -388,6 +381,13 @@ var sammyApp = Sammy('#app_main', function() {
       setLocal('logged_in', 0);
       context.redirect('#/');
     } else context.redirect('#/');
+  });
+});
+
+jQuery(function() {
+  sammyApp.run('#/tables');
+  $('#loginForm').submit(function(event) {
+    event.preventDefault();
   });
 });
 

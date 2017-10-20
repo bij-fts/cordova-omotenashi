@@ -1,0 +1,77 @@
+{
+  "_from": "git+https://github.com/DavidBriglio/cordova-plugin-local-notifications.git",
+  "_id": "cordova-plugin-local-notifications-db@0.8.4",
+  "_inBundle": false,
+  "_integrity": "sha1-ARU5JZVjNjX0pPuBx61BxCOCfA8=",
+  "_location": "/cordova-plugin-local-notifications-db",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "git",
+    "raw": "https://github.com/DavidBriglio/cordova-plugin-local-notifications",
+    "rawSpec": "https://github.com/DavidBriglio/cordova-plugin-local-notifications",
+    "saveSpec": "git+https://github.com/DavidBriglio/cordova-plugin-local-notifications.git",
+    "fetchSpec": "https://github.com/DavidBriglio/cordova-plugin-local-notifications.git",
+    "gitCommittish": "master"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "git+https://github.com/DavidBriglio/cordova-plugin-local-notifications.git#5e72ff895e59b493d7749751f177cf019f2a89d2",
+  "_spec": "https://github.com/DavidBriglio/cordova-plugin-local-notifications",
+  "_where": "C:\\xampp\\htdocs\\cordova",
+  "author": {
+    "name": "David Briglio"
+  },
+  "bugs": {
+    "url": "https://github.com/katzer/cordova-plugin-local-notifications/issues"
+  },
+  "bundleDependencies": false,
+  "cordova_name": "Cordova LocalNotification Plugin",
+  "dependencies": {
+    "cordova-plugin-app-event": ">=1.1.0",
+    "cordova-plugin-device": "*"
+  },
+  "deprecated": false,
+  "description": "Schedules and queries for local notifications",
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.6.0"
+    },
+    {
+      "name": "cordova-plugman",
+      "version": ">=4.3.0"
+    },
+    {
+      "name": "cordova-windows",
+      "version": ">=4.2.0"
+    }
+  ],
+  "homepage": "https://github.com/DavidBriglio/cordova-plugin-local-notifications",
+  "keywords": [
+    "appplant",
+    "notification",
+    "local notification",
+    "cordova",
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios",
+    "cordova-windows"
+  ],
+  "license": "Apache-2.0",
+  "name": "cordova-plugin-local-notifications-db",
+  "platforms": [
+    "ios",
+    "android",
+    "windows"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DavidBriglio/cordova-plugin-local-notifications.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "0.8.4"
+}

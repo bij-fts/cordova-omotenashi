@@ -7,7 +7,7 @@
       <div class="col-xs-6">
         <a href="#/tables/{{id}}">
           <div class="table-holder {{vacant_or_occupied}}">
-            <h3 class="table-number">#{{name}}</h3>
+            <h3 class="table-number">{{name}}</h3>
           </div>
         </a>
       </div>

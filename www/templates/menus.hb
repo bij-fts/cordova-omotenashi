@@ -141,22 +141,6 @@
               <div class="col-xs-12 col-sm-12 hidden" id="apply_promo">
                 <h4>Coupon/Promotion:</h4>
                 <select class="form-control" id="promo">
-                  <option selected disabled>Select Promotion...</option>
-                  <option value="">Sample Promo #1</option>
-                  <option value="">Sample Promo #2</option>
-                  <option value="">Sample Promo #3</option>
-                  <option value="">Sample Promo #1</option>
-                  <option value="">Sample Promo #2</option>
-                  <option value="">Sample Promo #3</option>
-                  <option value="">Sample Promo #1</option>
-                  <option value="">Sample Promo #2</option>
-                  <option value="">Sample Promo #3</option>
-                  <option value="">Sample Promo #1</option>
-                  <option value="">Sample Promo #2</option>
-                  <option value="">Sample Promo #3</option>
-                  <option value="">Sample Promo #1</option>
-                  <option value="">Sample Promo #2</option>
-                  <option value="">Sample Promo #3</option>
                 </select>
               </div>
             </div>
@@ -222,6 +206,19 @@
   });
 
   $('#orderModal').on('show.bs.modal', function (event) {
+    $('#promo').empty();
+    $.ajax({
+      url: apiUrl + '/promos/free',
+      success: function(response) {
+        $.each(response, function (i, item) {
+          $('#promo').append($('<option>', { 
+            value: item.id,
+            text : item.name 
+          }));
+        });
+      }
+    });
+
     document.getElementById('order_form').reset();
     document.getElementById("quantity").defaultValue = 1;
     $('#table-select').addClass('hidden');
@@ -239,6 +236,18 @@
     modal.find('#menu_name').val(button.data('menuname'));
     modal.find('#image').val(button.data('image'));
     modal.find('#kitchen').val(button.data('kitchenid'));
+
+    $.ajax({
+      url: apiUrl + '/promos/menus/' + parseInt(button.data('menuid')),
+      success: function(response) {
+        $.each(response, function (i, item) {
+          $('#promo').append($('<option>', { 
+            value: item.id,
+            text : item.name 
+          }));
+        });
+      }
+    });
 
     var menu = button.data('menuname');
 
