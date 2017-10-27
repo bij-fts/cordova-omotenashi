@@ -13,3 +13,11 @@
 	padding-top: .3em;
 }
 
+tr .warning {
+	color: pink;
+}
+
+tr .info {
+	color: violet;
+}
+

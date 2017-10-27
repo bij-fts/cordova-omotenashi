@@ -15,9 +15,11 @@
             </div>
             <div class="col-xs-8 product-short-info">
               <h3>{{menu}}</h3>
-              <h5><strong>QTY: </strong><span id="trayQty">{{qty}}</span></h5>
-              <h5><strong>Price: </strong>Php {{forHumans price}}</h5>
-              <h5 class="product-note"><strong>Notes:</strong> {{arrayToString notes}}</h5>
+              <h5><strong class="pull-left">Quantity: </strong><span id="trayQty" class="pull-right item_{{@index}}" style="padding-right: 4em">{{qty}}</span></h5>
+              <div class="clearfix"></div>
+              <h5><strong class="pull-left">Price: </strong><span class="pull-right" style="padding-right: 4em">Php {{forHumans price}}</span></h5>
+              <div class="clearfix"></div>
+              <h5 class="product-note"><strong>Notes:</strong><br>{{arrayToString notes}}</h5>
               <a class="remove-item-btn" data-menu="{{menu}}" data-tableId="{{../table_id}}" data-itemId="{{menu_id}}">Remove</a>
               <a class="edit-item-btn" data-menu="{{menu}}" data-qty="{{qty}}" data-tableId="{{../table_id}}" data-itemId="{{menu_id}}" data-toggle="modal" data-target="#editModal">Edit</a>
             </div>
@@ -106,6 +108,10 @@ $('#editModal').on('show.bs.modal', function (event) {
   var button = $(event.relatedTarget);
   var modal = $(this);
 
+  var tray = getTray(button.data('table_id'));
+
+
+  // modal.find('#notes').val();
   modal.find('#quantity').val(button.data('qty'));
   modal.find('#menu').val(button.data('menu'));
   modal.find('#menu_id').val(button.data('itemid'));
@@ -144,11 +150,10 @@ $('#editModal').on('show.bs.modal', function (event) {
     var table_id = parseInt($('#table_id').val());
     var qty = parseInt($('#quantity').val());
     var menu = $('#menu').val();
-
     var tray = getTray(table_id);
     var item = tray.orders[getObjectIndex(tray.orders, 'menu_id', menu_id)];
     item.qty = qty;
-    $('#trayQty').html(qty);
+    $('#item_' + getObjectIndex(tray.orders, 'menu_id', menu_id)).html(qty);
     $('#editModal').modal('hide');
     cordova.plugins.snackbar('Updated "' + menu + '"', 'LONG', '', function() {});
 

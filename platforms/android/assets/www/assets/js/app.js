@@ -1,26 +1,83 @@
 var host = window.localStorage.getItem('host');
 var local = window.localStorage;
 var socket = io(host + ':3000');
+var DEBUG = true;
+
+function appLog(t) {
+  var c = window.localStorage.getItem('log');
+  if(c.length < 1) c='['+moment().format('llll')+'] '+t+'\n';
+  else c+='['+moment().format('llll')+'] '+t+'\n';
+  window.localStorage.setItem('log', c);
+}
 
 var app = {
   initialize: function() { document.addEventListener('deviceready', this.onDeviceReady.bind(this), false); },
   onDeviceReady: function() { this.receivedEvent('deviceready');
+    DEBUG = false;
+    document.addEventListener("backbutton", onBackKeyDown, false);
+    document.addEventListener("offline", onOffline, false);
+    document.addEventListener("online", onOnline, false);
+    /* START */
+    cordova.plugins.notification.local.on('trigger', function (notification) {
+      // Tell Node Server specified device received notification
+      navigator.vibrate([1000,1000,1000]);
+      socket.emit('notification/received', device.uuid);
+    }, this);
+
+    cordova.plugins.notification.local.on('click', function (notification) {
+      // Redirect to page in waiter app that displays all "completed" orders
+      // console.log(notification);
+      var data = JSON.parse(notification.data);
+      var table_id = parseInt(data.table_id);
+
+      window.location.assign('#/orders/' + table_id);
+    }, this);
+    /* END */
+    jQuery(function() {
+      sammyApp.run('#/tables');
+      $('#loginForm').submit(function(event) {
+        event.preventDefault();
+      });
+    });
   },
   receivedEvent: function(id) {}
 }.initialize();
-    /* START */
-    // cordova.plugins.notification.local.on('trigger', function (notification) {
-    //   // Tell Node Server specified device received notification
-    //   navigator.vibrate([1000,1000,1000]);
-    //   socket.emit('notification/received', device.uuid);
-    // }, this);
 
-    // cordova.plugins.notification.local.on('click', function (notification) {
-    //   // Redirect to page in waiter app that displays all "completed" orders
-    //   console.log(notification);
-    //   // window.location.assign('#/completed');
-    // }, this);
-    /* END */
+jQuery(function() {
+  sammyApp.run('#/tables');
+  $('#loginForm').submit(function(event) {
+    event.preventDefault();
+  });
+});
+
+function onBackKeyDown(event) {
+  event.preventDefault();
+
+  if(window.location.hash == "#/login" || window.location.hash == "#/") {
+
+  }
+
+  if( $('div.modal').hasClass('show') ) {
+    // console.log('modal currently shown');
+    $('.moda')
+  }else {
+    // console.log('no modal currently shown');
+    window.history.back();
+  }
+}
+
+function onOffline(argument) {
+  navigator.notification.alert(
+    'You are offline',
+    function() {
+    },
+    '',
+    []
+  );
+}
+
+function onOnline(argument) {}
+
 var port = '8000';
 var apiUrl = host + ':' + port + '/api';
 
@@ -48,10 +105,10 @@ var sammyApp = Sammy('#app_main', function() {
       data: data,
       beforeSend: function(request) {
         var options = { dimBackground: true };
-        // SpinnerPlugin.activityStart("Connecting...", options);
+        if(!DEBUG) SpinnerPlugin.activityStart("Connecting...", options);
       },
       complete: function(response) {
-        // SpinnerPlugin.activityStop();
+        if(!DEBUG) SpinnerPlugin.activityStop();
       },
       statusCode: {
         401: function(response) {
@@ -110,6 +167,12 @@ var sammyApp = Sammy('#app_main', function() {
               });
             });
           }
+        },
+        500: function(response) {
+          appLog(response)
+        },
+        0: function(response) {
+          appLog(response)
         }
       }
     });
@@ -125,14 +188,20 @@ var sammyApp = Sammy('#app_main', function() {
         },
         beforeSend: function(request) {
           var options = { dimBackground: true };
-          // SpinnerPlugin.activityStart("Loading...", options);
+          if(!DEBUG) SpinnerPlugin.activityStart("Loading...", options);
+        },
+        statusCode: {
+          0: function() {
+            alert("No Connection");
+          }
         },
         success: function(response) {
           setLocal('data', JSON.stringify(response));
         },
         error: function(response) {
           alert("Cannot get menu data");
-          navigator.app.exit();
+          console.log(response);
+          navigator.app.exitApp();
         }
       });
 
@@ -143,7 +212,15 @@ var sammyApp = Sammy('#app_main', function() {
           'Authorization' : 'Bearer ' + getLocal('api_token')
         },
         complete:function(response) {
-          // SpinnerPlugin.activityStop();
+          if(!DEBUG) SpinnerPlugin.activityStop();
+        },
+        statusCode: {
+          0: function() {
+            alert("No Connection");
+          },
+          400: function(response) {
+
+          }
         },
         success: function(response) {
           context.load('templates/header.hb')
@@ -154,9 +231,6 @@ var sammyApp = Sammy('#app_main', function() {
             context.showTrayButton = false;
             context.partial('templates/tables.hb');
           });
-        },
-        error: function(response) {
-          alert(response);
         }
       });
     } else context.redirect('#/');
@@ -173,7 +247,7 @@ var sammyApp = Sammy('#app_main', function() {
         context.kitchens = kitchens;
         context.showTrayButton = true;
         var tray = getTray(context.table_id);
-        context.badge = tray.orders.length;
+        // context.badge = tray.orders.length;
         context.partial('templates/kitchens.hb');
       });
     } else context.redirect('#/');
@@ -191,7 +265,7 @@ var sammyApp = Sammy('#app_main', function() {
         context.headerText = "Select Menu";
         context.showTrayButton = true;
         var tray = getTray(context.table_id);
-        context.badge = tray.orders.length;
+        // context.badge = tray.orders.length;
         context.categories = categories;
         context.partial('templates/categories.hb');
       });
@@ -214,7 +288,7 @@ var sammyApp = Sammy('#app_main', function() {
         context.headerText = "Select Item";
         context.showTrayButton = true;
         var tray = getTray(context.table_id);
-        context.badge = tray.orders.length;
+        // context.badge = tray.orders.length;
         context.order_total = updateTotal(getTray(context.table_id));
         context.menus = menus;
         context.host = host + ':' + port;
@@ -235,7 +309,7 @@ var sammyApp = Sammy('#app_main', function() {
           },
           beforeSend: function(request) {
             var options = { dimBackground: true };
-            SpinnerPlugin.activityStart("Loading...", options);
+            if(!DEBUG) SpinnerPlugin.activityStart("Loading...", options);
           },
           success: function(response) {
             context.menus = response;
@@ -244,7 +318,7 @@ var sammyApp = Sammy('#app_main', function() {
             alert(response);
           },
           complete: function(response) {
-            SpinnerPlugin.activityStop();
+            if(!DEBUG) SpinnerPlugin.activityStop();
             context.partials = { header: partial };
             context.table_id = context.params.table;
             context.headerText = "Search Menus";
@@ -295,8 +369,9 @@ var sammyApp = Sammy('#app_main', function() {
         context.table_id = context.params.table;
         context.headerText = "Tray: Table " + context.table_id;
         context.showTrayButton = false;
+        // context.showPromoButton = parseInt(tray.orders.length) > 0 ? true : false;
+        context.showPromoButton = true;
         var tray = getTray(context.table_id);
-        context.badge = tray.orders.length;
         context.tray = tray;
         context.host = host + ':' + port;
         context.order_total = updateTotal(getTray(context.table_id));
@@ -375,19 +450,16 @@ var sammyApp = Sammy('#app_main', function() {
   this.get('#/logout', function(context) {
     if (auth()) {
       closeNav();
-      var backup = getLocal('host');
+      var host = getLocal('host');
+      var log = getLocal('log');
+
       local.clear();
-      setLocal('host', backup);
+
+      setLocal('log', log);
+      setLocal('host', host);
       setLocal('logged_in', 0);
       context.redirect('#/');
     } else context.redirect('#/');
-  });
-});
-
-jQuery(function() {
-  sammyApp.run('#/tables');
-  $('#loginForm').submit(function(event) {
-    event.preventDefault();
   });
 });
 
@@ -401,9 +473,14 @@ Handlebars.registerHelper('humanize', function(object) {
 Handlebars.registerHelper('arrayToString', function(object) {
   if (object[0] === '[') {
     var notes_array = JSON.parse(object);
-    var output = notes_array.join();
+    var output = notes_array.join('\n');
     return output;
   } else return object;
+});
+Handlebars.registerHelper('stringToObj', function(string) {
+  if (string[0] === '[') {
+    return JSON.parse(string);
+  } else return string;
 });
 Handlebars.registerHelper('timeForHumans', function(object) {
   return moment(Date.parse(object)).format('hh:mm A');
@@ -411,14 +488,16 @@ Handlebars.registerHelper('timeForHumans', function(object) {
 Handlebars.registerHelper('ng-handlebars', function(options) {
   return options.fn();
 });
+Handlebars.registerHelper('statusRow', function(object) {
+  switch(object) {
+    case 'Open': return 'info';
+    case 'Closed': return 'success';
+    case 'Cancelled': return 'danger';
+    case 'Processing': return 'warning';
+  }
+});
 
 /* Handlebars Helper Functions */
-function isJson(item) {
-  item = typeof item !== "string" ? JSON.stringify(item) : item;
-  try { item = JSON.parse(item); } catch (e) { return false; }
-  if (typeof item === "object" && item !== null) return true;
-  return false;
-}
 
 function search(id) {window.location.href = "#/table/" + id + "/search";}
 
@@ -446,11 +525,25 @@ function addItem() {
   var image = x.find('#image').val();
   var kitchen_id = parseInt(x.find('#kitchen').val());
 
-  console.log(qty);
+  // console.log(qty);
 
   if (qty > 1 && raw_notes.length) {
     // Convert to array if textarea is not empty
-    notes = JSON.stringify(raw_notes.split('\n'));
+    
+    var match = /\r|\n/.exec(raw_notes);
+    
+    if (match) {
+      console.log('has newline ... splitting');
+      notes = JSON.stringify(raw_notes.split('\n'));
+    }else {
+      console.log('no newline ... toArray');
+      var temp_array = [];
+      for (var i = 0; i < qty; i++) {
+        temp_array[i] = raw_notes;
+      }
+      notes = JSON.stringify(temp_array);
+    }
+
   } else notes = raw_notes;
 
   var trays = getJSON('trays');
@@ -459,12 +552,45 @@ function addItem() {
   // check if this item exists in this tray
   var menuIdx = getObjectIndex(tray.orders, 'menu_id', menu_id);
 
+  // Item exists
   if (menuIdx != null) {
-    // console.log('exists');
-    // console.log(JSON.stringify(tray.orders[menuIdx]));
-    tray.orders[menuIdx].qty += 1;
-    var current = JSON.parse((tray.orders[menuIdx].notes));
-    tray.orders[menuIdx].notes = current.push(notes);
+    console.log('item in tray ... updating');
+
+    // console.log(JSON.stringify(tray.orders[menuIdx])); 
+    tray.orders[menuIdx].qty += qty;
+    // console.log(tray.orders[menuIdx].notes);
+    
+    var current_notes = tray.orders[menuIdx].notes;
+    if(current_notes.length >= 1 && current_notes[0] == '[') {
+      console.log('array notes ... pushing new notes');
+
+      var existing = JSON.parse(current_notes);
+      // console.log(existing);
+
+      console.log(notes);
+      
+      // Added item notes is an array
+      if(notes[0] == '[') {
+        notes = JSON.parse(notes);
+        // console.log(notes);
+
+        var new_notes = existing.concat(notes);
+
+        tray.orders[menuIdx].notes = JSON.stringify(new_notes);
+      }else {
+        existing.push(notes);
+        tray.orders[menuIdx].notes = JSON.stringify(existing);
+      }
+
+    }else {
+      console.log('string notes ... converting to array');
+      var temp_notes = [];
+      
+      if(current_notes != '' && current_notes.length > 1) temp_notes.push(current_notes);
+      temp_notes.push(notes);
+
+      tray.orders[menuIdx].notes = JSON.stringify(temp_notes);
+    }
   } else {
     var item = {
       "kitchen_id": kitchen_id,
@@ -493,8 +619,17 @@ function auth() {
 }
 
 function quickOrder() {
+  var tray = getTray(table_id);
+  var trays = getJSON('trays');
+  var summary = '';
+
+  // Create Order Summary String
+  for(var i = 0; i < tray.orders.length; i++) {
+    summary += tray.orders[i].qty + ' x\t' + tray.orders[i].menu + '\n';
+  }
+
   navigator.notification.confirm(
-    // 'Additional Notes:',
+    summary,
     'Submit this order?',
     confirm,
     '',
@@ -511,12 +646,6 @@ function confirm(selection) {
 
     var trays = getJSON('trays');
 
-    var summary = '';
-    // Create Order Summary String
-    for(var i = 0; i < tray.orders.length; i++) {
-      summary += tray.orders[i].qty + ' x\t' + tray.orders[i].menu + '\n';
-    }
-
     // if (parseInt(selection) === 3) tray.notes = "For Take-out";
     var data = JSON.parse(JSON.stringify(tray));
 
@@ -528,31 +657,32 @@ function confirm(selection) {
         'Authorization': 'Bearer ' + getLocal('api_token')
       },
       statusCode: {
+        0: function(response) {
+          alert('No Connection');
+        },
         200: function(response) {
+          console.log(response);
           clearTray(parseInt(response.table));
           socket.emit('order/new', data);
-          // console.log(JSON.parse(trays[getObjectIndex(trays, 'table_id', table_id)]));
-          // trays[getObjectIndex(trays, 'table_id', table_id)] = new Tray();
-          // console.log(JSON.parse(trays[getObjectIndex(trays, 'table_id', table_id)]));
 
-          navigator.notification.confirm(
-            'Order Summary:\n'+ summary,
-            function(selection) {
-              // if(selection == 1) {
-                window.location.assign("#/tables");
-              // }
-            },
-            'Successfully Placed Order',
-            ['Return to Table Selection']
-          );
+          /*
+            Visual Feedback for successful order
+          */
+
+          // navigator.notification.confirm(
+          //   'Order Summary:\n'+ summary,
+          //   function(selection) {
+          //       window.location.assign("#/tables");
+          //   },
+          //   'Successfully Placed Order',
+          //   ['Return to Table Selection']
+          // );
         },
         400: function(response) {
-          alert(response);
-          cordova.plugins.snackbar('Failed to place order', 'LONG', '', function() {});
+          setLocal('log', getLocal('log') + moment().format('llll') + ' confirm() orders/test AJAX Failed [ERROR 400: ' + response.responseJSON.error + ']\n');
         },
         500: function(response) {
-          alert("Server Error");
-          // cordova.plugins.snackbar('Server Error', 'LONG', '', function() {});
+          setLocal('log', getLocal('log') + moment().format('llll') + ' confirm() orders/test AJAX Failed [ERROR 500: Check api logs]\n');
         }
       }
     });
@@ -624,25 +754,17 @@ function fetchTrays() {
 function updateTotal(tray) {
   var total = 0;
   var total_orders = 0;
+  var total_items = 0;
 
   for (var index = 0; index < tray.orders.length; index++) {
+    total_items += tray.orders[index].qty;
     total += parseFloat(tray.orders[index].price * tray.orders[index].qty);
   }
   tray.order_total = total;
 
   $('.quick-total #order_total').html(forHumans(tray.order_total));
+  $('.badge').html(total_items);
 
-  // if(parseInt($('.quick-total #order_total').html()) >= 1) {
-  //   $('.quick-order a').addClass('valid');
-  // }else {
-  //   $('.quick-order a').removeClass('valid');
-  //   $('.quick-order a').removeClass('active');
-  // }
-
-  // if($('.quick-order a').hasClass('valid') && !($('.quick-order a').hasClass('active'))) {
-  //   $('.quick-order a').addClass('active');
-  //   $('.quick-order a').on('click', quickOrder);
-  // }
   setTray(tray);
   return parseFloat(total);
 }

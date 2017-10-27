@@ -157,6 +157,7 @@
   var selected = [];
 
   function clearForm() {
+    if($('#addBtn').prop('disabled')) $('#addBtn').prop('disabled', false);
     $('form input').val();
     $('form textarea').val();
     $('form textarea').empty();
@@ -203,6 +204,8 @@
 
   if(getLocal('host') == null) {
     var host = prompt("Please enter hosts address:", "http://192.168.");
+    
+    window.localStorage.setItem('log', '');
     window.localStorage.setItem('host', host);
   }
 

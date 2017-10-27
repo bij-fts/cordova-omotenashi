@@ -20,7 +20,7 @@
           <div class="row">
             <div class="col-xs-4">
               <div class="product-img">
-                <img src="{{../host}}/{{image_uri}}">
+                <img class="img-responsive" src="{{../host}}/{{image_uri}}">
               </div>
             </div>
             <div class="col-xs-8 product-short-info">
@@ -73,7 +73,7 @@
           <div class="row">
             <div class="product-mid-details">
               <div class="col-xs-6 col-sm-6">
-                <h4>Quantity:</h4>
+                <h5>Quantity:</h5>
                 <div class="input-group">
                   <span class="input-group-btn">
                     <button onclick="qLess()" class="btn btn-default" type="button"><i class="fa fa-minus"></i></button>
@@ -85,12 +85,11 @@
                 </div>
               </div>
               <div class="col-xs-6 col-sm-6">
-                <h4>Promotion:</h4>
-                <select class="form-control" id="promo_type">
-                  <option value="none">None</option>
-                  <option value="free">Free</option>
-                  <option value="disc">Discount</option>
-                </select>
+                <h5>Note Options:</h5>
+                <div class="btn-group" style="min-width: 100%;">
+                  <button onclick="editNotes()" style="width: 50%" class="btn btn-default" type="button" id="editBtn"><i class="fa fa-pencil"></i> Edit</button>
+                  <button onclick="editNotes(false)" style="width: 50%" class="btn btn-default" type="button" id="clearBtn"><i class="fa fa-close"></i> Clear</button>
+                </div>
               </div>
             </div>
 
@@ -99,7 +98,7 @@
                 <input type="hidden" id="allowed-flavors">
                 <div class="selected-flavor">
                   <div class="col-xs-12 col-sm-12">
-                    <h4>Select Sauce (<span id="min">1</span>/<span id="max">1</span>)</h4>
+                    <h5>Select Sauce (<span id="min">1</span>/<span id="max">1</span>)</h5>
                   </div>
                   <div class="col-xs-4 col-sm-4">
                     <div class="md-checkbox">
@@ -134,14 +133,9 @@
                 </div>
               </div>
               <div class="form-group">
-                <div class="col-xs-12 col-sm-12"><br>
-                  <textarea readonly class="form-control" placeholder="Note" id="notes" name="notes" rows="2" style="resize: none"></textarea>
+                <div class="col-xs-12 col-sm-12"><h5>Notes:</h5>
+                  <textarea readonly class="form-control" placeholder="Additional Info" id="notes" name="notes" rows="2" style="resize: none"></textarea>
                 </div>
-              </div>
-              <div class="col-xs-12 col-sm-12 hidden" id="apply_promo">
-                <h4>Coupon/Promotion:</h4>
-                <select class="form-control" id="promo">
-                </select>
               </div>
             </div>
           </div>
@@ -159,7 +153,7 @@
               <button class="col-xs-6 col-sm-6 btn btn-md btn-block btn-default" onclick="clearForm()" type="reset">Cancel</button>
             </div>
             <div class="col-xs-6 col-sm-6 pull-right">
-              <button class="col-xs-6 col-sm-6 btn btn-md btn-block btn-default btn-add-tray" onclick="addItem()" type="button">Add</button>
+              <button class="col-xs-6 col-sm-6 btn btn-md btn-block btn-default btn-add-tray" onclick="addItem()" id="addBtn" type="button">Add</button>
             </div>
           </div>
         </div>
@@ -168,25 +162,13 @@
 </div>
 
 <script>
-  $('#promo').change(function() {
-    console.log($(this[this.selectedIndex]).val());
-    console.log($(this[this.selectedIndex]).text());
-  });
-
-  $('#promo_type').change(function() {
-    if($(this[this.selectedIndex]).val() != 'none') {
-      $('#apply_promo').addClass('show');
-      $('#apply_promo').removeClass('hidden');
-    }else {
-      $('#apply_promo').removeClass('show');
-      $('#apply_promo').addClass('hidden');
-    }
-  });
-
   $('input[type=checkbox]').on('change', function (e) {
     var limit = parseInt($('#allowed-flavors').val());
+    var count = $('input[type=checkbox]:checked').length;
 
-    if ($('input[type=checkbox]:checked').length <= limit) {
+    $('#addBtn').prop('disabled', count != 0 ? false : true);
+
+    if (count <= limit) {
       $('#min').html($('input[type=checkbox]:checked').length);
 
       if ($(this).is(':checked')) {
@@ -195,38 +177,32 @@
         $('#min').html($('input[type=checkbox]:checked').length);
         selected.splice(selected.indexOf($(this).val()), 1);
       }
-    }else $(this).prop('checked', false);
+    }else{
+      $(this).prop('checked', false);
+    }
 
-    $('textarea').html(selected.join(', '))
+    $('textarea').html(selected.join(', '));
   });
 
   $('#orderModal').on('hide.bs.modal', function (event) {
     $('#table-select').removeClass('hidden');
-    $('#apply_promo').addClass('hidden');
+  });
+
+  $('#notes').on('change', function() {
+    var notes = $(this).val();
+    console.log(notes.length);
   });
 
   $('#orderModal').on('show.bs.modal', function (event) {
-    $('#promo').empty();
-    $.ajax({
-      url: apiUrl + '/promos/free',
-      success: function(response) {
-        $.each(response, function (i, item) {
-          $('#promo').append($('<option>', { 
-            value: item.id,
-            text : item.name 
-          }));
-        });
-      }
-    });
-
+    clearForm();
     document.getElementById('order_form').reset();
     document.getElementById("quantity").defaultValue = 1;
+    
     $('#table-select').addClass('hidden');
-    clearForm();
+    
     var button = $(event.relatedTarget);
     var modal = $(this);
 
-    // modal.find('.modal-body #kitchen_name').html(button.data('kitchen'));
     modal.find('.modal-body #kitchen_name').empty();
     modal.find('.modal-title').html(button.data('menuname'));
 
@@ -237,22 +213,12 @@
     modal.find('#image').val(button.data('image'));
     modal.find('#kitchen').val(button.data('kitchenid'));
 
-    $.ajax({
-      url: apiUrl + '/promos/menus/' + parseInt(button.data('menuid')),
-      success: function(response) {
-        $.each(response, function (i, item) {
-          $('#promo').append($('<option>', { 
-            value: item.id,
-            text : item.name 
-          }));
-        });
-      }
-    });
-
     var menu = button.data('menuname');
 
     if(menu != null)
     if(menu.includes('Takoyaki') && !menu.includes('Set')) {
+
+      modal.find('#addBtn').prop('disabled', true);
 
       if($('.selection-wrapper').hasClass('hidden')) {
         $('.selection-wrapper').removeClass('hidden');
@@ -299,20 +265,28 @@
       if($('.selection-wrapper').hasClass('show')) {
         $('.selection-wrapper').removeClass('show');
       }
-
-      // if($('.product-mid-details').hasClass('hidden')) {
-      //   $('.product-mid-details').removeClass('hidden');
-      // }
-      // if(!$('.product-mid-details').hasClass('show')) {
-      //   $('.product-mid-details').addClass('show');
-      // }
     }
   });
 
   function qMore() {
     document.getElementById("quantity").stepUp();
   }
+  
   function qLess() {
     document.getElementById("quantity").stepDown();
+  }
+
+  function editNotes(x = true) {
+    if(!x && !$('textarea').prop('readonly')) {
+      $('textarea').val('');
+    }else {
+      if($('textarea').prop('readonly')) {
+        $('#editBtn').addClass('active');
+      }else {
+        $('#editBtn').removeClass('active');
+      }
+      $('textarea').prop('readonly', function(i, v) { return !v; });
+      $('textarea').focus();
+    }
   }
 </script>

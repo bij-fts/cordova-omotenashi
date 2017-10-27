@@ -12,10 +12,10 @@
         <div class="panel-body">
           <form role="form" method="post" action="#/" id="loginForm">
             <div class="form-group">
-              <input class="form-control" placeholder="Username" name="username" type="text" autofocus>
+              <input class="form-control" placeholder="Username" name="username" type="text" autofocus autocorrect="off" autocapitalize="none" value="waiter">
             </div>
             <div class="form-group">
-              <input class="form-control" placeholder="Password" name="password" type="password">
+              <input class="form-control" placeholder="Password" name="password" type="password" value="secret">
             </div>
             <button type="submit" id="loginBtn" class="btn btn-lg btn-danger btn-block">Login</a>
           </form>

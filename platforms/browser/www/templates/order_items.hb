@@ -3,6 +3,41 @@
 <section id="kitchen-select" class="custom-padding">
 	<div class="container">
     <div class="row">
+
+      <div class="panel panel-default">
+        <div class="panel-heading">Panel heading without title</div>
+        <div class="panel-body">
+          Panel content
+        </div>
+      </div>
+
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Panel title</h3>
+        </div>
+        <div class="panel-body">
+          <table class="table"> 
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Qty</th>
+                <th>Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each tableOrder.details}}
+              <tr>
+                <td>{{name}}</td>
+                <td>{{qty}}</td>
+                <td>Php {{forHumans regular_price}}</td>
+              </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+        <div class="panel-footer">Panel footer</div>
+      </div>
+
       <div class="col-xs-12">
         <div class="pull-left">
           <h4>Order#{{tableOrder.order_number}}</h4>
@@ -19,26 +54,8 @@
         </div>
       </div>
     </div>
-		<div class="row">
+<!-- 		<div class="row">
       <div class="col-xs-12">
-  			<table class="table"> 
-  				<thead>
-  					<tr>
-  						<th>Name</th>
-  						<th>Qty</th>
-  						<th>Price</th>
-  					</tr>
-  				</thead>
-  				<tbody>
-  					{{#each tableOrder.details}}
-  					<tr>
-  						<td>{{name}}</td>
-  						<td>{{qty}}</td>
-  						<td>Php {{forHumans regular_price}}</td>
-  					</tr>
-  					{{/each}}
-  				</tbody>
-  			</table>
 
         <div class="row">
           <div class="col-xs-12">
@@ -56,8 +73,6 @@
         </div>
 
       </div>
-		</div>
+		</div> -->
 	</div>
 </section>
-
-<script type=""></script>
