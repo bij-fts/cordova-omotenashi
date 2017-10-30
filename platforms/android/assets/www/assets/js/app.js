@@ -529,9 +529,9 @@ function addItem() {
 
   if (qty > 1 && raw_notes.length) {
     // Convert to array if textarea is not empty
-    
+
     var match = /\r|\n/.exec(raw_notes);
-    
+
     if (match) {
       console.log('has newline ... splitting');
       notes = JSON.stringify(raw_notes.split('\n'));
@@ -556,10 +556,10 @@ function addItem() {
   if (menuIdx != null) {
     console.log('item in tray ... updating');
 
-    // console.log(JSON.stringify(tray.orders[menuIdx])); 
+    // console.log(JSON.stringify(tray.orders[menuIdx]));
     tray.orders[menuIdx].qty += qty;
     // console.log(tray.orders[menuIdx].notes);
-    
+
     var current_notes = tray.orders[menuIdx].notes;
     if(current_notes.length >= 1 && current_notes[0] == '[') {
       console.log('array notes ... pushing new notes');
@@ -568,7 +568,7 @@ function addItem() {
       // console.log(existing);
 
       console.log(notes);
-      
+
       // Added item notes is an array
       if(notes[0] == '[') {
         notes = JSON.parse(notes);
@@ -585,7 +585,7 @@ function addItem() {
     }else {
       console.log('string notes ... converting to array');
       var temp_notes = [];
-      
+
       if(current_notes != '' && current_notes.length > 1) temp_notes.push(current_notes);
       temp_notes.push(notes);
 
@@ -624,17 +624,17 @@ function quickOrder() {
   var summary = '';
 
   // Create Order Summary String
-  for(var i = 0; i < tray.orders.length; i++) {
-    summary += tray.orders[i].qty + ' x\t' + tray.orders[i].menu + '\n';
-  }
-
-  navigator.notification.confirm(
-    summary,
-    'Submit this order?',
-    confirm,
-    '',
-    ['Yes','No']
-  );
+  // for(var i = 0; i < tray.orders.length; i++) {
+  //   summary += tray.orders[i].qty + ' x\t' + tray.orders[i].menu + '\n';
+  // }
+  //
+  // navigator.notification.confirm(
+  //   summary,
+  //   'Submit this order?',
+  //   confirm,
+  //   '',
+  //   ['Yes','No']
+  // );
   //, 'Take Out'
 }
 
